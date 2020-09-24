@@ -4,6 +4,10 @@
 
 Polarity's ServiceNow Security Incident Response (SIR) Integration allows the lookup of ServiceNow security incidents (e.g. SIR00000012), and Observables including IP addresses, CVE's, web domains, file hashes and e-mail addresses against your instance of ServiceNow.
 
+<div>
+  <img width="350" alt="Integration Example" src="./assets/integration-example.png">
+</div>
+
 To learn more about ServiceNow Security Incident Response (SIR), visit the [official website](https://docs.servicenow.com/bundle/orlando-security-management/page/product/security-incident-response/reference/sir-landing-page.html).
 
 ## ServiceNow Security Incident Response (SIR) Integration Options
