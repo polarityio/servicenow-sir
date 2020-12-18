@@ -10,7 +10,7 @@
                       {{#if layout.icon}}
                           {{fa-icon layout.icon fixedWidth=true}}
                       {{/if}}
-                      {{#if layout.link}}
+                      {{#if layout.incidentLink}}
                           <a class="p-link"
                              href="{{block.userOptions.url}}/nav_to.do?uri=sn_si_incident.do?sys_id={{get
                                      result
@@ -19,9 +19,27 @@
                           </a>
                           {{fa-icon "external-link" class="p-link ml-1"}}
                       {{/if}}
-                      {{#if layout.link1}}
+                      {{#if layout.observableLink}}
                           <a class="p-link"
-                             href="{{block.userOptions.url}}/nav_to.do?uri=sn_ti_observable?sys_id={{get
+                             href="{{block.userOptions.url}}/nav_to.do?uri=sn_ti_observable.do?sys_id={{get
+                                     result
+                                     (concat layout.path ".sysId")}}">
+                              {{get result (concat layout.path ".value")}}
+                          </a>
+                          {{fa-icon "external-link" class="p-link ml-1"}}
+                      {{/if}}
+                      {{#if layout.taskLink}}
+                          <a class="p-link"/
+                             href="{{block.userOptions.url}}/nav_to.do?uri=/sn_si_task.do?sys_id={{get
+                                     result
+                                     (concat layout.path ".sysId")}}">
+                              {{get result (concat layout.path ".value")}}
+                          </a>
+                          {{fa-icon "external-link" class="p-link ml-1"}}
+                      {{/if}}
+                      {{#if layout.userLink}}
+                          <a class="p-link"/
+                             href="{{block.userOptions.url}}/nav_to.do?uri=/sys_user.do?sys_id={{get
                                      result
                                      (concat layout.path ".sysId")}}">
                               {{get result (concat layout.path ".value")}}

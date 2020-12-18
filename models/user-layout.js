@@ -4,7 +4,7 @@ module.exports = [
     depth: 0,
     icon: 'user',
     type: 'title',
-    link: true
+    userLink: true
   },
   {
     path: 'title',
