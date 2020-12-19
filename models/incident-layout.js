@@ -23,7 +23,7 @@ module.exports = [
   },
   {
     path: 'short_description',
-    depth: 0,
+    depth: 0
   },
   {
     path: 'active',
@@ -73,7 +73,7 @@ module.exports = [
     depth: 0
   },
   {
-    path: 'urgency',
+    path: 'priority',
     depth: 0
   },
   {

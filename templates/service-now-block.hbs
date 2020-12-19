@@ -1,63 +1,67 @@
 {{#if details.results}}
-  {{#each details.results as | result index | }}
-      {{#if (gt index 0)}}
-          <hr>
-      {{/if}}
-      {{#each details.layout as | layout index| }}
-          {{#if (get result (concat layout.path ".value"))}}
-              {{#if (eq layout.type "title")}}
-                  <h1 class="p-title pl-{{layout.depth}}">
-                      {{#if layout.icon}}
-                          {{fa-icon layout.icon fixedWidth=true}}
-                      {{/if}}
-                      {{#if layout.incidentLink}}
-                          <a class="p-link"
-                             href="{{block.userOptions.url}}/nav_to.do?uri=sn_si_incident.do?sys_id={{get
-                                     result
-                                     (concat layout.path ".sysId")}}">
-                              {{get result (concat layout.path ".value")}}
-                          </a>
-                          {{fa-icon "external-link" class="p-link ml-1"}}
-                      {{/if}}
-                      {{#if layout.observableLink}}
-                          <a class="p-link"
-                             href="{{block.userOptions.url}}/nav_to.do?uri=sn_ti_observable.do?sys_id={{get
-                                     result
-                                     (concat layout.path ".sysId")}}">
-                              {{get result (concat layout.path ".value")}}
-                          </a>
-                          {{fa-icon "external-link" class="p-link ml-1"}}
-                      {{/if}}
-                      {{#if layout.taskLink}}
-                          <a class="p-link"/
-                             href="{{block.userOptions.url}}/nav_to.do?uri=/sn_si_task.do?sys_id={{get
-                                     result
-                                     (concat layout.path ".sysId")}}">
-                              {{get result (concat layout.path ".value")}}
-                          </a>
-                          {{fa-icon "external-link" class="p-link ml-1"}}
-                      {{/if}}
-                      {{#if layout.userLink}}
-                          <a class="p-link"/
-                             href="{{block.userOptions.url}}/nav_to.do?uri=/sys_user.do?sys_id={{get
-                                     result
-                                     (concat layout.path ".sysId")}}">
-                              {{get result (concat layout.path ".value")}}
-                          </a>
-                          {{fa-icon "external-link" class="p-link ml-1"}}
-                      {{/if}}
-                  </h1>
-              {{else if (eq layout.type "block")}}
-                  <div class="block p-key pl-{{layout.depth}}">
-                      {{get result (concat layout.path ".value")}}
-                  </div>
-              {{else}}
-                  <div class="pl-{{layout.depth}}">
-                      <span class="p-key">{{get result (concat layout.path ".title")}}:</span>
-                      <span class="p-value">{{get result (concat layout.path ".value")}}</span>
-                  </div>
-              {{/if}}
-          {{/if}}
-      {{/each}}
-  {{/each}}
+    {{#each details.results as | result index | }}
+        {{#if (gt index 0)}}
+            <hr>
+        {{/if}}
+        {{#each details.layout as | layout index| }}
+            {{#if (get result (concat layout.path ".value"))}}
+                {{#if (eq layout.type "title")}}
+                    <h1 class="p-title pl-{{layout.depth}}">
+                        {{#if layout.icon}}
+                            {{fa-icon layout.icon fixedWidth=true}}
+                        {{/if}}
+                        {{#if layout.incidentLink}}
+                            <a class="p-link"
+                                href="{{block.userOptions.url}}/nav_to.do?uri=sn_si_incident.do?sys_id={{get
+                                        result
+                                        (concat layout.path ".sysId")}}">
+                                {{get result (concat layout.path ".value")}}
+                            </a>
+                            {{fa-icon "external-link" class="p-link ml-1"}}
+                        {{/if}}
+                        {{#if layout.observableLink}}
+                            <a class="p-link"
+                                href="{{block.userOptions.url}}/nav_to.do?uri=sn_ti_observable.do?sys_id={{get
+                                        result
+                                        (concat layout.path ".sysId")}}">
+                                {{get result (concat layout.path ".value")}}
+                            </a>
+                            {{fa-icon "external-link" class="p-link ml-1"}}
+                        {{/if}}
+                        {{#if layout.taskLink}}
+                            <a class="p-link"/
+                                href="{{block.userOptions.url}}/nav_to.do?uri=/sn_si_task.do?sys_id={{get
+                                        result
+                                        (concat layout.path ".sysId")}}">
+                                {{get result (concat layout.path ".value")}}
+                            </a>
+                            {{fa-icon "external-link" class="p-link ml-1"}}
+                        {{/if}}
+                        {{#if layout.userLink}}
+                            <a class="p-link"/
+                                href="{{block.userOptions.url}}/nav_to.do?uri=/sys_user.do?sys_id={{get
+                                        result
+                                        (concat layout.path ".sysId")}}">
+                                {{get result (concat layout.path ".value")}}
+                            </a>
+                            {{fa-icon "external-link" class="p-link ml-1"}}
+                        {{/if}}
+                    </h1>
+                {{else if (eq layout.type "block")}}
+                    <div class="block p-key pl-{{layout.depth}}">
+                        {{get result (concat layout.path ".value")}}
+                    </div>
+                {{else}}
+                    <div class="pl-{{layout.depth}}">
+                        <span class="p-key">{{get result (concat layout.path ".title")}}:</span>
+                        {{#if (get result (concat layout.path ".color"))}}
+                            <span class="p-value" style="color: {{get result (concat layout.path ".color")}}">{{get result (concat layout.path ".value")}}</span>
+                        {{else}}
+                            <span class="p-value">{{get result (concat layout.path ".value")}}</span>
+                        {{/if}}
+                    </div>
+                {{/if}}
+            {{/if}}
+        {{/each}}
+    {{/each}}
 {{/if}}

@@ -16,7 +16,13 @@ const PRIORITIES = {
   3: 'Moderate',
   4: 'Low',
   5: 'Planning',
-}
+};
+
+const SEVERITIES = {
+  1: 'High',
+  2: 'Medium',
+  3: 'Low',
+};
 
 const layoutMap = {
   incident: incidentLayout,
@@ -321,6 +327,17 @@ const transformPropertyLinkValue = (propertyObj, value, parentObj) => ({
 const transformPropertyValue = (propertyObj, value, parentObj) => ({
   title: propertyObj.title,
   value: value,
+  ...(propertyObj.title === 'Priority' && {
+    value: `${value} - ${PRIORITIES[value]}`,
+    ...(value <= 2 && { color: value === 1 ? '#FF6248' : '#FFA500' })
+  }),
+  ...(propertyObj.title === 'Severity' && {
+    value: `${value} - ${SEVERITIES[value]}`,
+    ...(value <= 2 && { color: value === 1 ? '#FF6248' : '#FFA500' })
+  }),
+  ...(propertyObj.title === 'Risk' && {
+    color: value <= 50 ? '#90EF8F' : value <= 80 ? '#FFA500' : '#FF6248'
+  }),
   type: propertyObj.type,
   isLink: false,
   isProcessed: true,
@@ -332,9 +349,9 @@ function getSummaryTags(entityObj, results) {
   let summaryProperties;
 
   if (entityObj.types.indexOf('custom.incident') > -1) {
-    summaryProperties = ['sys_class_name', 'category', 'phase'];
+    summaryProperties = ['category', 'phase'];
   } else if (entityObj.types.indexOf('custom.task') > -1) {
-    summaryProperties = ['sys_class_name', 'category', 'phase', 'priority'];
+    summaryProperties = ['category', 'phase', 'priority'];
   } else {
     summaryProperties = ['finding'];
   }

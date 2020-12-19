@@ -73,7 +73,7 @@ module.exports = [
     depth: 0
   },
   {
-    path: 'urgency',
+    path: 'priority',
     depth: 0
   },
   {

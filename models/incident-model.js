@@ -59,8 +59,8 @@ module.exports = {
     title: 'Severity',
     type: 'incident'
   },
-  urgency: {
-    title: 'Urgency',
+  priority: {
+    title: 'Priority',
     type: 'incident'
   },
   value: {
