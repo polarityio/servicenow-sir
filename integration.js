@@ -3,18 +3,35 @@ const request = require('request');
 const config = require('./config/config');
 const fs = require('fs');
 const incidentLayout = require('./models/incident-layout');
+const taskLayout = require('./models/task-layout');
 const incidentModel = require('./models/incident-model');
 const userLayout = require('./models/user-layout');
 
 let requestWithDefaults;
 let Logger;
 
+const PRIORITIES = {
+  1: 'Critical',
+  2: 'High',
+  3: 'Moderate',
+  4: 'Low',
+  5: 'Planning',
+};
+
+const SEVERITIES = {
+  1: 'High',
+  2: 'Medium',
+  3: 'Low',
+};
+
 const layoutMap = {
   incident: incidentLayout,
+  task: taskLayout,
   sys_user: userLayout
 };
 
 const propertyMap = {
+  task: incidentModel,
   incident: incidentModel,
   sys_user: {
     name: {
@@ -170,7 +187,11 @@ function queryIncidents(entityObj, options, lookupResults, nextEntity, cb, prior
 }
 
 function getServiceNowObjectType(entityObj) {
-  return 'incident';
+  if (entityObj.types.indexOf('custom.incident') > -1) {
+    return 'incident';
+  } else if (entityObj.types.indexOf('custom.task') > -1) {
+    return 'task';
+  }
 }
 
 function parseResults(type, results, withDetails, options, cb) {
@@ -306,6 +327,17 @@ const transformPropertyLinkValue = (propertyObj, value, parentObj) => ({
 const transformPropertyValue = (propertyObj, value, parentObj) => ({
   title: propertyObj.title,
   value: value,
+  ...(propertyObj.title === 'Priority' && {
+    value: `${value} - ${PRIORITIES[value]}`,
+    ...(value <= 2 && { color: value === 1 ? '#FF6248' : '#FFA500' })
+  }),
+  ...(propertyObj.title === 'Severity' && {
+    value: `${value} - ${SEVERITIES[value]}`,
+    ...(value <= 2 && { color: value === 1 ? '#FF6248' : '#FFA500' })
+  }),
+  ...(propertyObj.title === 'Risk' && {
+    color: value <= 50 ? '#90EF8F' : value <= 80 ? '#FFA500' : '#FF6248'
+  }),
   type: propertyObj.type,
   isLink: false,
   isProcessed: true,
@@ -317,7 +349,9 @@ function getSummaryTags(entityObj, results) {
   let summaryProperties;
 
   if (entityObj.types.indexOf('custom.incident') > -1) {
-    summaryProperties = ['sys_class_name', 'category', 'phase'];
+    summaryProperties = ['category', 'phase'];
+  } else if (entityObj.types.indexOf('custom.task') > -1) {
+    summaryProperties = ['category', 'phase', 'priority'];
   } else {
     summaryProperties = ['finding'];
   }
@@ -326,7 +360,8 @@ function getSummaryTags(entityObj, results) {
     Logger.info('result: ', result);
     summaryProperties.forEach((prop) => {
       if (typeof result[prop] !== 'undefined') {
-        acc.push(result[prop]);
+        const tag = result[prop];
+        acc.push(prop === 'priority' ? `Priority: ${tag} - ${PRIORITIES[tag]}` : tag);
       }
     });
 
@@ -348,10 +383,14 @@ function getQueries(entityObj, options) {
   if (entityObj.types.indexOf('custom.incident') > -1) {
     result.table = 'sn_si_incident';
     result.query = `number=${entityObj.value}`;
+  } else if (entityObj.types.indexOf('custom.task') > -1) {
+    result.table = 'sn_si_task';
+    result.query = `number=${entityObj.value}`;
   } else {
     result.table = 'sn_ti_observable';
     result.query = `value=${entityObj.value}`;
   }
+
   return result;
 }
 

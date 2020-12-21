@@ -31,6 +31,10 @@ module.exports = {
       regex: /SIR[0-9]{7,}/
     },
     {
+      key: 'task',
+      regex: /SIT[0-9]{7,}/
+    },
+    {
       key: 'cve',
       regex: /CVE-(1999|2\d{3})-(0\d{2}[1-9]|[1-9]\d{3,})/
     }

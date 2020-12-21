@@ -4,7 +4,7 @@ module.exports = [
     depth: 0,
     icon: 'ticket',
     type: 'title',
-    incidentLink: true
+    taskLink: true
   },
   {
     path: 'description',

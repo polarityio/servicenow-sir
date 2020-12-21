@@ -7,8 +7,20 @@ module.exports = {
     title: 'Active',
     type: 'incident'
   },
-  short_description: {
+  description: {
     title: 'Description',
+    type: 'incident'
+  },
+  short_description: {
+    title: 'Short Description',
+    type: 'incident'
+  },
+  secure_notes: {
+    title: 'Secure Notes',
+    type: 'incident'
+  },
+  work_notes: {
+    title: 'Work Notes',
     type: 'incident'
   },
   close_notes: {
@@ -39,12 +51,16 @@ module.exports = {
     title: 'Closed At',
     type: 'incident'
   },
+  risk_score: {
+    title: 'Risk',
+    type: 'incident'
+  },
   severity: {
     title: 'Severity',
     type: 'incident'
   },
-  urgency: {
-    title: 'Urgency',
+  priority: {
+    title: 'Priority',
     type: 'incident'
   },
   value: {
