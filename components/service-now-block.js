@@ -1,80 +1,146 @@
 polarity.export = PolarityComponent.extend({
-    details: Ember.computed.alias('block.data.details'),
-    items: Ember.computed('block.data.details', function () {
-        var entity = this.get('block.entity');
-        var details = this.get('block.data.details');
-        details = details.results;
+  details: Ember.computed.alias('block.data.details'),
+  activeTab: 'details',
+  description: '',
+  workNotes: '',
+  state: '',
+  possibleStates: [],
+  businessImpact: '',
+  possibleBusinessImpacts: [],
+  category: '',
+  possibleCategories: [],
+  subcategory: '',
+  possibleSubCategories: [],
+  sysId: '',
+  updateMessage: '',
+  updateErrorMessage: '',
+  updateIsRunning: false,
+  ticketClosed: false,
+  init() {
+    const details = this.get('details')
+    const [result] = details.results;
+    if (result) {
+      this.set('description', result.description && result.description.value);
+      this.set('businessImpact', result.business_criticality && result.business_criticality.value);
+      this.set('work_notes', result.work_notes && result.work_notes.value);
+      this.set('state', result.state && result.state.value);
+      this.set('sysId', result.sys_id && result.sys_id.value);
+      this.set('category', (result.category && result.category.value) || '-- None --');
+      this.set(
+        'subcategory',
+        (result.subcategory && result.subcategory.value) || '-- None --'
+      );
+      this.set(
+        'ticketClosed',
+        (result.state && result.state.value === 'Closed') ||
+          result.state.value === 'Cancelled'
+      );
 
-        var openedBy;
-        var assignedTo;
-        var resolvedBy;
-        var closedBy;
-        var updatedBy;
+      this.set('possibleBusinessImpacts', details.possibleBusinessImpacts);
+      this.set('possibleCategories', details.possibleCategories);
+      this.set('possibleSubcategories', details.possibleSubcategories);
+      this.set('possibleStates', details.possibleStates);
+    }
 
-        if (!entity.isEmail) {
-            openedBy = details.opened_by ? details.opened_by.name : 'Unavailable';
-            assignedTo = details.assigned_to ? details.assigned_to.name : 'Unavailable';
-            resolvedBy = details.resolved_by ? details.resolved_by.name : 'Unavailable';
-            closedBy = details.closed_by ? details.closed_by.name : 'Unavailable';
-            updatedBy = details.sys_updated_by ? details.sys_updated_by.name : 'Unavailable';
-        }
+    this._super(...arguments);
+  },
+  actions: {
+    changeTab: function (tabName) {
+      this.set('activeTab', tabName);
+    },
+    updateTicket: function () {
+      const outerThis = this;
+      outerThis.set('updateMessage', '');
+      outerThis.set('updateErrorMessage', '');
+      outerThis.set('updateIsRunning', true);
+      outerThis.get('block').notifyPropertyChange('data');
 
-        var items = [
-            // Email Attributes
-            { title: 'Name:', value: details.name },
-            { title: 'VIP', value: details.vip, boolean: true },
-            { title: 'Active', value: details.active, boolean: true },
-            { title: 'Gender:', value: details.gender },
-            { title: 'Education Status:', value: details.edu_status },
-            { title: 'Locked Out', value: details.locked_out, boolean: true },
-            { title: 'Failed Attempts:', value: details.failed_attempts },
-            { title: 'Needs Password Reset', value: details.password_needs_reset, boolean: true },
+      outerThis
+        .sendIntegrationMessage({
+          action: 'updateTicket',
+          data: {
+            entity: outerThis.get('block.entity'),
+            sysId: outerThis.get('sysId'),
+            description: outerThis.get('description'),
+            workNotes: outerThis.get('workNotes'),
+            state: outerThis.get('state'),
+            businessImpact: outerThis.get('businessImpact'),
+            category: outerThis.get('category'),
+            subcategory: outerThis.get('subcategory'),
+            work_notes: outerThis.get('work_notes')
+          }
+        })
+        .then(
+          ({
+            results,
+            possibleStates,
+            possibleBusinessImpacts,
+            possibleCategories,
+            possibleSubcategories
+          }) => {
+            outerThis.set('details.results', results);
+            outerThis.set('possibleBusinessImpacts', possibleBusinessImpacts);
+            outerThis.set('possibleCategories', possibleCategories);
+            outerThis.set('possibleSubcategories', possibleSubcategories);
+            outerThis.set('possibleStates', possibleStates);
+            outerThis.set('updateMessage', 'Successfully Updated');
+          }
+        )
+        .catch((err) => {
+          console.log(err);
+          outerThis.set(
+            'updateErrorMessage',
+            'Updating Ticket Failed: ' +
+              (err &&
+                (err.detail || err.err || err.message || err.title || err.description)) ||
+              'Unknown Reason'
+          );
+        })
+        .finally(() => {
+          outerThis.set('updateIsRunning', false);
+          outerThis.get('block').notifyPropertyChange('data');
+          setTimeout(() => {
+            outerThis.set('updateMessage', '');
+            outerThis.set('updateErrorMessage', '');
+            outerThis.get('block').notifyPropertyChange('data');
+          }, 5000);
+        });
+    },
+    changeCategory: function (category) {
+      const outerThis = this;
+      outerThis.set('category', category);
+      outerThis.set('updateMessage', 'Loading Subcategories...');
+      outerThis.set('updateErrorMessage', '');
+      outerThis.get('block').notifyPropertyChange('data');
 
-            // INC/CHG Attributes
-            { title: 'Short Description:', value: details.short_description },
-            { title: 'Urgency:', value: details.urgency },
-            { title: 'Severity:', value: details.severity },
-            { title: 'Category:', value: details.category },
-            { title: 'Close Code:', value: details.close_code },
-            { title: 'Close Notes:', value: details.close_notes },
-            { title: 'Opened By:', value: openedBy },
-            { title: 'Assigned To:', value: assignedTo },
-            { title: 'Resolved By:', value: resolvedBy },
-            { title: 'Closed By:', value: closedBy },
-            { title: 'Updated By:', value: updatedBy },
-
-            // Universal?
-            { title: 'Created On:', value: details.sys_created_on },
-            { title: 'Created By:', value: details.sys_created_by }
-        ]
-            .filter(item => {
-                if (item.boolean) {
-                    return item.value == 'true';
-                } else {
-                    return item.value;
-                }
-            })
-            .map(item => {
-                if (item.boolean) {
-                    item.value = 'Yes';
-                }
-
-                return item;
-            });
-
-        return items;
-    }),
-    section: Ember.computed('block.data.details', function () {
-        var details = this.get('block.data.details');
-        var type = details.results.sys_class_name;
-
-        return {
-            'sys_user': 'User',
-            'sn_si_incident': 'Incident'
-        }[type];
-    }),
-    link: Ember.computed('block.data.details', function () {
-        var details = this.get('block.data.details');
-        return `${details.host}/nav_to.do?uri=${details.uriType}do?sys_id=${details.results.sys_id}`;
-    })
+      outerThis
+        .sendIntegrationMessage({
+          action: 'getSubcategories',
+          data: {
+            category
+          }
+        })
+        .then(({ possibleSubcategories }) => {
+          outerThis.set('subcategory', '-- None --');
+          outerThis.set('possibleSubcategories', possibleSubcategories);
+        })
+        .catch((err) => {
+          outerThis.set(
+            'updateErrorMessage',
+            'Updating Subcategory Options Failed: ' +
+              (err &&
+                (err.detail || err.err || err.message || err.title || err.description)) ||
+              'Unknown Reason'
+          );
+        })
+        .finally(() => {
+          outerThis.set('updateMessage', '');
+          outerThis.get('block').notifyPropertyChange('data');
+          setTimeout(() => {
+            outerThis.set('updateErrorMessage', '');
+            outerThis.get('block').notifyPropertyChange('data');
+          }, 5000);
+        });
+    }
+  }
 });

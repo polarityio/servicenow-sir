@@ -12,12 +12,12 @@ module.exports = [
     type: 'block'
   },
   {
-    path: 'secure_notes',
+    path: 'sys_id',
     depth: 0,
-    type: 'block'
+    type: 'none'
   },
   {
-    path: 'work_notes',
+    path: 'secure_notes',
     depth: 0,
     type: 'block'
   },
@@ -65,11 +65,19 @@ module.exports = [
     depth: 0
   },
   {
+    path: 'state',
+    depth: 0
+  },
+  {
     path: 'risk_score',
     depth: 0
   },
   {
     path: 'severity',
+    depth: 0
+  },
+  {
+    path: 'business_criticality',
     depth: 0
   },
   {
@@ -87,6 +95,11 @@ module.exports = [
   {
     path: 'closed_at',
     depth: 0
+  },
+  {
+    path: 'work_notes',
+    depth: 0,
+    type: 'list'
   },
   {
     path: 'opened_by',

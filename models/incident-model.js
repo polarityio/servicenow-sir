@@ -19,6 +19,10 @@ module.exports = {
     title: 'Secure Notes',
     type: 'incident'
   },
+  sys_id: {
+    title: 'sys_id',
+    type: 'incident'
+  },
   work_notes: {
     title: 'Work Notes',
     type: 'incident'
@@ -33,6 +37,10 @@ module.exports = {
   },
   category: {
     title: 'Category',
+    type: 'incident'
+  },
+  business_criticality: {
+    title: 'Business Impact',
     type: 'incident'
   },
   subcategory: {
@@ -53,6 +61,10 @@ module.exports = {
   },
   risk_score: {
     title: 'Risk',
+    type: 'incident'
+  },
+  state: {
+    title: 'State',
     type: 'incident'
   },
   severity: {
