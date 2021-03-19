@@ -127,13 +127,6 @@ const updateTicket = (
 
         const dropdownOptions = getDropdownOptions(results);
 
-        Logger.trace({
-          test: 9898989898989,
-          requestOptions,
-          state,
-          results,
-          dropdownOptions
-        });
         callback(null, {
           results,
           ...dropdownOptions
