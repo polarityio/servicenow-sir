@@ -19,9 +19,12 @@ polarity.export = PolarityComponent.extend({
   init() {
     const details = this.get('details')
     const [result] = details.results;
-    if (result) {
+    if (this.get('details.isIncident') && result) {
       this.set('description', result.description && result.description.value);
-      this.set('businessImpact', result.business_criticality && result.business_criticality.value);
+      this.set(
+        'businessImpact',
+        result.business_criticality && result.business_criticality.value
+      );
       this.set('work_notes', result.work_notes && result.work_notes.value);
       this.set('state', result.state && result.state.value);
       this.set('sysId', result.sys_id && result.sys_id.value);

@@ -96,7 +96,7 @@ module.exports = {
     // the directory you specify is writable by the `polarityd:polarityd` user and group.
 
     //directoryPath: '/var/log/polarity-integrations',
-    level: 'trace' //trace, debug, info, warn, error, fatal
+    level: 'info' //trace, debug, info, warn, error, fatal
   },
 
   /**
