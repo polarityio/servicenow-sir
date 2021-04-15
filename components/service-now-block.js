@@ -17,7 +17,7 @@ polarity.export = PolarityComponent.extend({
   updateIsRunning: false,
   ticketClosed: false,
   init() {
-    const details = this.get('details')
+    const details = this.get('details');
     const [result] = details.results;
     if (this.get('details.isIncident') && result) {
       this.set('description', result.description && result.description.value);
