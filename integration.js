@@ -11,7 +11,6 @@ const getServiceNowObjectType = require('./helpers/getServiceNowObjectType');
 const getDropdownOptions = require('./helpers/getDropdownOptions');
 const parseResults = require('./helpers/parseResults');
 
-
 let requestWithDefaults;
 let Logger;
 
@@ -20,8 +19,6 @@ const layoutMap = {
   task: taskLayout,
   sys_user: userLayout
 };
-
-
 
 function doLookup(entities, options, cb) {
   Logger.trace({ options: options });
@@ -32,13 +29,23 @@ function doLookup(entities, options, cb) {
       queryIncidents(entityObj, options, lookupResults, nextEntity, cb);
     },
     (err) => {
-      Logger.trace({ lookupResults: lookupResults }, 'Checking the final payload coming through');
+      Logger.trace(
+        { lookupResults: lookupResults },
+        'Checking the final payload coming through'
+      );
       cb(err, lookupResults);
     }
   );
 }
 
-function queryIncidents(entityObj, options, lookupResults, nextEntity, cb, priorQueryResult) {
+function queryIncidents(
+  entityObj,
+  options,
+  lookupResults,
+  nextEntity,
+  cb,
+  priorQueryResult
+) {
   const queryObj = getQueries(entityObj, options);
   if (queryObj.error) {
     return nextEntity({
@@ -159,8 +166,6 @@ function queryIncidents(entityObj, options, lookupResults, nextEntity, cb, prior
   }
 }
 
-
-
 function getSummaryTags(entityObj, results) {
   let summaryProperties;
 
@@ -229,8 +234,6 @@ function onDetails(lookupObject, options, cb) {
   );
 }
 
-
-
 function startup(logger) {
   Logger = logger;
   const requestOptions = {
@@ -245,7 +248,10 @@ function startup(logger) {
     requestOptions.key = fs.readFileSync(config.request.key);
   }
 
-  if (typeof config.request.passphrase === 'string' && config.request.passphrase.length > 0) {
+  if (
+    typeof config.request.passphrase === 'string' &&
+    config.request.passphrase.length > 0
+  ) {
     requestOptions.passphrase = config.request.passphrase;
   }
 
@@ -267,7 +273,8 @@ function startup(logger) {
 function validateOption(errors, options, optionName, errMessage) {
   if (
     typeof options[optionName].value !== 'string' ||
-    (typeof options[optionName].value === 'string' && options[optionName].value.length === 0)
+    (typeof options[optionName].value === 'string' &&
+      options[optionName].value.length === 0)
   ) {
     errors.push({
       key: optionName,
