@@ -106,8 +106,8 @@ module.exports = {
         'The URL of the ServiceNow instance to connect to including the schema (i.e., https://)',
       default: '',
       type: 'text',
-      userCanEdit: true,
-      adminOnly: false
+      userCanEdit: false,
+      adminOnly: true
     },
     {
       key: 'username',
