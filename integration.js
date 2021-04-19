@@ -4,25 +4,16 @@ const config = require('./config/config');
 const fs = require('fs');
 const incidentLayout = require('./models/incident-layout');
 const taskLayout = require('./models/task-layout');
-const incidentModel = require('./models/incident-model');
 const userLayout = require('./models/user-layout');
+const updateTicket = require('./helpers/updateTicket');
+const getSubcategories = require('./helpers/getSubcategories');
+const getServiceNowObjectType = require('./helpers/getServiceNowObjectType');
+const getDropdownOptions = require('./helpers/getDropdownOptions');
+const parseResults = require('./helpers/parseResults');
+
 
 let requestWithDefaults;
 let Logger;
-
-const PRIORITIES = {
-  1: 'Critical',
-  2: 'High',
-  3: 'Moderate',
-  4: 'Low',
-  5: 'Planning',
-};
-
-const SEVERITIES = {
-  1: 'High',
-  2: 'Medium',
-  3: 'Low',
-};
 
 const layoutMap = {
   incident: incidentLayout,
@@ -30,44 +21,7 @@ const layoutMap = {
   sys_user: userLayout
 };
 
-const propertyMap = {
-  task: incidentModel,
-  incident: incidentModel,
-  sys_user: {
-    name: {
-      title: 'Name',
-      type: 'sys_user'
-    },
-    title: {
-      title: 'Title',
-      type: 'sys_user'
-    },
-    email: {
-      title: 'Email',
-      type: 'sys_user'
-    },
-    department: {
-      title: 'Department',
-      type: 'cmn_department'
-    },
-    location: {
-      title: 'Location',
-      type: 'cmn_location'
-    }
-  },
-  cmn_location: {
-    name: {
-      title: 'Location',
-      type: 'cmn_location'
-    }
-  },
-  cmn_department: {
-    name: {
-      title: 'Department',
-      type: 'department'
-    }
-  }
-};
+
 
 function doLookup(entities, options, cb) {
   Logger.trace({ options: options });
@@ -101,6 +55,7 @@ function queryIncidents(entityObj, options, lookupResults, nextEntity, cb, prior
       },
       qs: {
         sysparm_query: queryObj.query,
+        sysparm_display_value: true,
         sysparm_limit: 10
       },
       json: true
@@ -140,38 +95,52 @@ function queryIncidents(entityObj, options, lookupResults, nextEntity, cb, prior
         Logger.trace({ body: body }, 'Passing through all others lookup');
         const serviceNowObjectType = getServiceNowObjectType(entityObj);
 
-        parseResults(serviceNowObjectType, queryResult, false, options, (err, parsedResults) => {
-          if (err) {
-            return nextEntity(err);
-          }
-          if (priorQueryResult) {
-            lookupResults.push({
-              entity: entityObj,
-              data: {
-                summary: getSummaryTags(entityObj, queryResult).concat(priorQueryResult.summary),
-                details: {
-                  ...priorQueryResult.details,
-                  serviceNowObjectType: serviceNowObjectType,
-                  layout: layoutMap[serviceNowObjectType],
-                  results: parsedResults
+        parseResults(
+          serviceNowObjectType,
+          queryResult,
+          false,
+          options,
+          requestWithDefaults,
+          Logger,
+          (err, parsedResults) => {
+            if (err) return nextEntity(err);
+            const dropdownOptions = getDropdownOptions(parsedResults);
+
+            if (priorQueryResult) {
+              lookupResults.push({
+                entity: entityObj,
+                data: {
+                  summary: getSummaryTags(entityObj, queryResult).concat(
+                    priorQueryResult.summary
+                  ),
+                  details: {
+                    ...priorQueryResult.details,
+                    serviceNowObjectType: serviceNowObjectType,
+                    layout: layoutMap[serviceNowObjectType],
+                    results: parsedResults,
+                    isIncident: entityObj.types.indexOf('custom.incident') > -1,
+                    ...dropdownOptions
+                  }
                 }
-              }
-            });
-          } else {
-            lookupResults.push({
-              entity: entityObj,
-              data: {
-                summary: getSummaryTags(entityObj, body.result),
-                details: {
-                  serviceNowObjectType: serviceNowObjectType,
-                  layout: layoutMap[serviceNowObjectType],
-                  results: parsedResults
+              });
+            } else {
+              lookupResults.push({
+                entity: entityObj,
+                data: {
+                  summary: getSummaryTags(entityObj, body.result),
+                  details: {
+                    serviceNowObjectType: serviceNowObjectType,
+                    layout: layoutMap[serviceNowObjectType],
+                    results: parsedResults,
+                    isIncident: entityObj.types.indexOf('custom.incident') > -1,
+                    ...dropdownOptions
+                  }
                 }
-              }
-            });
+              });
+            }
+            nextEntity(null);
           }
-          nextEntity(null);
-        });
+        );
       }
     });
   } else if (priorQueryResult) {
@@ -186,164 +155,7 @@ function queryIncidents(entityObj, options, lookupResults, nextEntity, cb, prior
   }
 }
 
-function getServiceNowObjectType(entityObj) {
-  if (entityObj.types.indexOf('custom.incident') > -1) {
-    return 'incident';
-  } else if (entityObj.types.indexOf('custom.task') > -1) {
-    return 'task';
-  }
-}
 
-function parseResults(type, results, withDetails, options, cb) {
-  if (typeof withDetails === 'undefined') {
-    withDetails = false;
-  }
-
-  let parsedResults = [];
-  async.each(
-    results,
-    (result, next) => {
-      parseResult(type, result, withDetails, options, (err, parsedResult) => {
-        parsedResults.push(parsedResult);
-        next(err);
-      });
-    },
-    (err) => {
-      cb(err, parsedResults);
-    }
-  );
-}
-
-function parseResult(type, result, withDetails, options, cb) {
-  let parsedResult = {};
-
-  if (typeof propertyMap[type] !== 'undefined') {
-    async.eachOf(
-      propertyMap[type],
-      (propertyMapObject, propertyKey, nextProperty) => {
-        let resultValue = result[propertyKey];
-
-        if (typeof resultValue !== 'undefined') {
-          if (valueIsLink(resultValue) && !linkIsProcessed(resultValue)) {
-            // this property is a link so we need to traverse it
-            if (withDetails) {
-              Logger.trace('Printing resultValue', {
-                resultValue: resultValue
-              });
-
-              getDetailsInformation(resultValue.link, options, (err, details) => {
-                if (err) {
-                  return nextProperty(err);
-                }
-                Logger.trace('Parsing', { details: details });
-
-                parseResult(
-                  propertyMapObject.type,
-                  details,
-                  true,
-                  options,
-                  (parseDetailsError, parsedDetailsResult) => {
-                    if (parseDetailsError) {
-                      return nextProperty(parseDetailsError);
-                    }
-
-                    if (!valueIsProcessed(resultValue)) {
-                      let transformedResult = transformPropertyLinkValue(
-                        propertyMapObject,
-                        resultValue,
-                        result
-                      );
-                      transformedResult.details = parsedDetailsResult;
-                      parsedResult[propertyKey] = transformedResult;
-                    } else {
-                      resultValue.details = parsedDetailsResult;
-                      parsedResult[propertyKey] = resultValue;
-                    }
-
-                    nextProperty(null);
-                  }
-                );
-              });
-            } else {
-              // don't need to try and load details yet
-              parsedResult[propertyKey] = transformPropertyLinkValue(
-                propertyMapObject,
-                resultValue,
-                result
-              );
-              nextProperty(null);
-            }
-          } else if (!valueIsProcessed(resultValue)) {
-            parsedResult[propertyKey] = transformPropertyValue(
-              propertyMapObject,
-              resultValue,
-              result
-            );
-            nextProperty(null);
-          } else {
-            nextProperty(null);
-          }
-        } else {
-          nextProperty(null);
-        }
-      },
-      (err) => {
-        Logger.trace({ parsedResult }, 'checking parsed result in the function');
-        cb(err, parsedResult);
-      }
-    );
-  } else {
-    Logger.trace({ parsedResult }, 'checking parsed result outside the function');
-    cb(null, parsedResult);
-  }
-}
-
-function valueIsProcessed(resultValue) {
-  if (resultValue !== null && resultValue.isProcessed === true) {
-    return true;
-  }
-  return false;
-}
-
-const linkIsProcessed = (resultValue) =>
-  !(
-    resultValue !== null &&
-    (resultValue.details === null || typeof resultValue.details === 'undefined')
-  );
-
-const valueIsLink = (resultValue) => resultValue !== null && typeof resultValue.link === 'string';
-
-const transformPropertyLinkValue = (propertyObj, value, parentObj) => ({
-  title: propertyObj.title,
-  value: propertyObj.title,
-  type: propertyObj.type,
-  link: value.link,
-  isLink: true,
-  isProcessed: true,
-  details: null,
-  sysId: value.value
-});
-
-const transformPropertyValue = (propertyObj, value, parentObj) => ({
-  title: propertyObj.title,
-  value: value,
-  ...(propertyObj.title === 'Priority' && {
-    value: `${value} - ${PRIORITIES[value]}`,
-    ...(value <= 2 && { color: value === 1 ? '#FF6248' : '#FFA500' })
-  }),
-  ...(propertyObj.title === 'Severity' && {
-    value: `${value} - ${SEVERITIES[value]}`,
-    ...(value <= 2 && { color: value === 1 ? '#FF6248' : '#FFA500' })
-  }),
-  ...(propertyObj.title === 'Risk' && {
-    color: value <= 50 ? '#90EF8F' : value <= 80 ? '#FFA500' : '#FF6248'
-  }),
-  type: propertyObj.type,
-  isLink: false,
-  isProcessed: true,
-  details: null,
-  sysId: parentObj.sys_id
-});
 
 function getSummaryTags(entityObj, results) {
   let summaryProperties;
@@ -361,7 +173,7 @@ function getSummaryTags(entityObj, results) {
     summaryProperties.forEach((prop) => {
       if (typeof result[prop] !== 'undefined') {
         const tag = result[prop];
-        acc.push(prop === 'priority' ? `Priority: ${tag} - ${PRIORITIES[tag]}` : tag);
+        acc.push(prop === 'priority' ? `Priority: ${tag}` : tag);
       }
     });
 
@@ -400,46 +212,20 @@ function onDetails(lookupObject, options, cb) {
     lookupObject.data.details.results,
     true,
     options,
+    requestWithDefaults,
+    Logger,
     (err, parsedResults) => {
       if (err) {
         return cb(err, lookupObject.data);
       } else {
-        Logger.debug('onDetails', { results: lookupObject.data.details.results });
+        Logger.debug({ results: lookupObject }, 'onDetails');
         cb(null, lookupObject.data);
       }
     }
   );
 }
 
-function getDetailsInformation(link, options, cb) {
-  const requestOptions = {
-    uri: link,
-    auth: {
-      username: options.username,
-      password: options.password
-    }
-  };
 
-  requestWithDefaults(requestOptions, (err, response, body) => {
-    if (err) {
-      return cb({
-        err: err,
-        link: link,
-        detail: 'HTTP Request Error when retrieving details'
-      });
-    }
-
-    if (response.statusCode !== 200) {
-      return cb({
-        detail: 'Unexpected Status Code Received',
-        link: link,
-        statusCode: response.statusCode
-      });
-    }
-
-    cb(null, body.result);
-  });
-}
 
 function startup(logger) {
   Logger = logger;
@@ -496,9 +282,15 @@ function validateOptions(options, callback) {
   callback(null, errors);
 }
 
+const getOnMessage = { updateTicket, getSubcategories };
+
+const onMessage = ({ action, data: actionParams }, options, callback) =>
+  getOnMessage[action](actionParams, options, requestWithDefaults, callback, Logger);
+
 module.exports = {
-  doLookup: doLookup,
-  startup: startup,
-  validateOptions: validateOptions,
-  onDetails: onDetails
+  doLookup,
+  startup,
+  validateOptions,
+  onDetails,
+  onMessage
 };

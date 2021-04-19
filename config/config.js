@@ -25,6 +25,7 @@ module.exports = {
   description:
     'ServiceNow Security Incident Response (SIR) allows your organization to manage the life cycle of your security incidents from initial analysis to containment, eradication, and recovery.',
   entityTypes: ['ipv4', 'email', 'domain', 'hash'],
+  defaultColor: "light-purple",
   customTypes: [
     {
       key: 'incident',
@@ -97,6 +98,7 @@ module.exports = {
     //directoryPath: '/var/log/polarity-integrations',
     level: 'info' //trace, debug, info, warn, error, fatal
   },
+
   /**
    * Options that are displayed to the user/admin in the Polarity integration user-interface.  Should be structured
    * as an array of option objects.
