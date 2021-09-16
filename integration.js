@@ -49,10 +49,14 @@ function queryIncidents(entityObj, options, lookupResults, nextEntity, cb, prior
   if (queryObj.query && queryObj.table) {
     let requestOptions = {
       uri: `${options.url}/api/now/table/${queryObj.table}`,
-      auth: {
-        username: options.username,
-        password: options.password
-      },
+      ...(options.apiKey
+        ? { headers: { Authorization: `key ${options.apiKey}` } }
+        : {
+            auth: {
+              username: options.username,
+              password: options.password
+            }
+          }),
       qs: {
         sysparm_query: queryObj.query,
         sysparm_display_value: true,
@@ -276,8 +280,19 @@ function validateOptions(options, callback) {
   let errors = [];
 
   validateOption(errors, options, 'url', 'You must provide a valid URL.');
-  validateOption(errors, options, 'username', 'You must provide a valid username.');
-  validateOption(errors, options, 'password', 'You must provide a valid password.');
+  if (!(options.username.value || options.password.value)) {
+    validateOption(
+      errors,
+      options,
+      'apiKey',
+      !(options.username.value || options.password.value || options.apiKey.value)
+        ? 'You must provide a valid Username and Password in the above fields, or an API Key here.'
+        : 'You must provide a valid API Key.'
+    );
+  } else {
+    validateOption(errors, options, 'username', 'You must provide a valid username.');
+    validateOption(errors, options, 'password', 'You must provide a valid password.');
+  }
 
   callback(null, errors);
 }

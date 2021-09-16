@@ -88,14 +88,6 @@ module.exports = {
     rejectUnauthorized: true
   },
   logging: {
-    // directory is relative to the this integrations directory
-    // e.g., if the integration is in /app/polarity-server/integrations/servicenow
-    // and you set directoryPath to be `integration-logs` then your logs will go to
-    // `/app/polarity-server/integrations/integration-logs`
-    // You can also set an absolute path.  If you set an absolute path you must ensure that
-    // the directory you specify is writable by the `polarityd:polarityd` user and group.
-
-    //directoryPath: '/var/log/polarity-integrations',
     level: 'info' //trace, debug, info, warn, error, fatal
   },
 
