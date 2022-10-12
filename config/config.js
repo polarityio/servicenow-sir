@@ -24,8 +24,8 @@ module.exports = {
    */
   description:
     'ServiceNow Security Incident Response (SIR) allows your organization to manage the life cycle of your security incidents from initial analysis to containment, eradication, and recovery.',
-  entityTypes: ['ipv4', 'email', 'domain', 'hash'],
-  defaultColor: "light-purple",
+  entityTypes: ['ipv4', 'email', 'domain', 'hash', 'cve'],
+  defaultColor: 'light-purple',
   customTypes: [
     {
       key: 'incident',
@@ -34,10 +34,6 @@ module.exports = {
     {
       key: 'task',
       regex: /SIT[0-9]{7,}/
-    },
-    {
-      key: 'cve',
-      regex: /CVE-(1999|2\d{3})-(0\d{2}[1-9]|[1-9]\d{3,})/
     }
   ],
   /**
@@ -88,14 +84,6 @@ module.exports = {
     rejectUnauthorized: true
   },
   logging: {
-    // directory is relative to the this integrations directory
-    // e.g., if the integration is in /app/polarity-server/integrations/servicenow
-    // and you set directoryPath to be `integration-logs` then your logs will go to
-    // `/app/polarity-server/integrations/integration-logs`
-    // You can also set an absolute path.  If you set an absolute path you must ensure that
-    // the directory you specify is writable by the `polarityd:polarityd` user and group.
-
-    //directoryPath: '/var/log/polarity-integrations',
     level: 'info' //trace, debug, info, warn, error, fatal
   },
 
@@ -114,8 +102,8 @@ module.exports = {
         'The URL of the ServiceNow instance to connect to including the schema (i.e., https://)',
       default: '',
       type: 'text',
-      userCanEdit: true,
-      adminOnly: false
+      userCanEdit: false,
+      adminOnly: true
     },
     {
       key: 'username',
@@ -130,6 +118,20 @@ module.exports = {
       key: 'password',
       name: 'Password',
       description: 'The password to login to ServiceNow with',
+      default: '',
+      type: 'password',
+      userCanEdit: true,
+      adminOnly: false
+    },
+    {
+      key: 'apiKey',
+      name: 'API Key',
+      description:
+        'The API Key used to access ServiceNows Rest API.  If this is being used, then you ' +
+        'will not need to use a Username and Password. This API Key will be prioritized ' +
+        'over the username password combination. For more information, checkout this ' +
+        'link here: https://developer.servicenow.com/dev.do#!/learn/learning-plans/paris/' +
+        'servicenow_application_developer/app_store_learnv2_rest_paris_creating_credentials',
       default: '',
       type: 'password',
       userCanEdit: true,

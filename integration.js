@@ -1,5 +1,5 @@
 const async = require('async');
-const request = require('request');
+const request = require('postman-request');
 const config = require('./config/config');
 const fs = require('fs');
 const incidentLayout = require('./models/incident-layout');
@@ -11,7 +11,6 @@ const getServiceNowObjectType = require('./helpers/getServiceNowObjectType');
 const getDropdownOptions = require('./helpers/getDropdownOptions');
 const parseResults = require('./helpers/parseResults');
 
-
 let requestWithDefaults;
 let Logger;
 
@@ -20,8 +19,6 @@ const layoutMap = {
   task: taskLayout,
   sys_user: userLayout
 };
-
-
 
 function doLookup(entities, options, cb) {
   Logger.trace({ options: options });
@@ -32,13 +29,23 @@ function doLookup(entities, options, cb) {
       queryIncidents(entityObj, options, lookupResults, nextEntity, cb);
     },
     (err) => {
-      Logger.trace({ lookupResults: lookupResults }, 'Checking the final payload coming through');
+      Logger.trace(
+        { lookupResults: lookupResults },
+        'Checking the final payload coming through'
+      );
       cb(err, lookupResults);
     }
   );
 }
 
-function queryIncidents(entityObj, options, lookupResults, nextEntity, cb, priorQueryResult) {
+function queryIncidents(
+  entityObj,
+  options,
+  lookupResults,
+  nextEntity,
+  cb,
+  priorQueryResult
+) {
   const queryObj = getQueries(entityObj, options);
   if (queryObj.error) {
     return nextEntity({
@@ -49,10 +56,14 @@ function queryIncidents(entityObj, options, lookupResults, nextEntity, cb, prior
   if (queryObj.query && queryObj.table) {
     let requestOptions = {
       uri: `${options.url}/api/now/table/${queryObj.table}`,
-      auth: {
-        username: options.username,
-        password: options.password
-      },
+      ...(options.apiKey
+        ? { headers: { Authorization: `key ${options.apiKey}` } }
+        : {
+            auth: {
+              username: options.username,
+              password: options.password
+            }
+          }),
       qs: {
         sysparm_query: queryObj.query,
         sysparm_display_value: true,
@@ -64,17 +75,33 @@ function queryIncidents(entityObj, options, lookupResults, nextEntity, cb, prior
     Logger.trace({ requestOptions: requestOptions }, 'Checking out request');
 
     requestWithDefaults(requestOptions, (err, resp, body) => {
-      if (err || resp.statusCode != 200) {
-        Logger.error('error during entity lookup', {
-          error: err,
-          statusCode: resp ? resp.statusCode : null
-        });
-
-        return cb(
-          err || {
-            detail: 'non-200 http status code: ' + resp.statusCode
-          }
+      if (err) {
+        Logger.error(
+          {
+            err
+          },
+          'Network error while querying incidents'
         );
+
+        return cb({
+          detail: 'Network error while querying incidents',
+          err
+        });
+      }
+
+      if (resp && resp.statusCode !== 200) {
+        Logger.error(
+          {
+            body,
+            statusCode: resp.statusCode
+          },
+          'API error while looking querying incidents'
+        );
+
+        return cb({
+          detail: `Unexpected status code ${resp.statusCode} received`,
+          body
+        });
       }
 
       const queryResult = body.result || [];
@@ -155,8 +182,6 @@ function queryIncidents(entityObj, options, lookupResults, nextEntity, cb, prior
   }
 }
 
-
-
 function getSummaryTags(entityObj, results) {
   let summaryProperties;
 
@@ -169,7 +194,6 @@ function getSummaryTags(entityObj, results) {
   }
 
   return results.reduce((acc, result) => {
-    Logger.info('result: ', result);
     summaryProperties.forEach((prop) => {
       if (typeof result[prop] !== 'undefined') {
         const tag = result[prop];
@@ -225,8 +249,6 @@ function onDetails(lookupObject, options, cb) {
   );
 }
 
-
-
 function startup(logger) {
   Logger = logger;
   const requestOptions = {
@@ -241,7 +263,10 @@ function startup(logger) {
     requestOptions.key = fs.readFileSync(config.request.key);
   }
 
-  if (typeof config.request.passphrase === 'string' && config.request.passphrase.length > 0) {
+  if (
+    typeof config.request.passphrase === 'string' &&
+    config.request.passphrase.length > 0
+  ) {
     requestOptions.passphrase = config.request.passphrase;
   }
 
@@ -263,7 +288,8 @@ function startup(logger) {
 function validateOption(errors, options, optionName, errMessage) {
   if (
     typeof options[optionName].value !== 'string' ||
-    (typeof options[optionName].value === 'string' && options[optionName].value.length === 0)
+    (typeof options[optionName].value === 'string' &&
+      options[optionName].value.length === 0)
   ) {
     errors.push({
       key: optionName,
@@ -276,8 +302,19 @@ function validateOptions(options, callback) {
   let errors = [];
 
   validateOption(errors, options, 'url', 'You must provide a valid URL.');
-  validateOption(errors, options, 'username', 'You must provide a valid username.');
-  validateOption(errors, options, 'password', 'You must provide a valid password.');
+  if (!(options.username.value || options.password.value)) {
+    validateOption(
+      errors,
+      options,
+      'apiKey',
+      !(options.username.value || options.password.value || options.apiKey.value)
+        ? 'You must provide a valid Username and Password in the above fields, or an API Key here.'
+        : 'You must provide a valid API Key.'
+    );
+  } else {
+    validateOption(errors, options, 'username', 'You must provide a valid username.');
+    validateOption(errors, options, 'password', 'You must provide a valid password.');
+  }
 
   callback(null, errors);
 }
