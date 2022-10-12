@@ -10,6 +10,16 @@ Polarity's ServiceNow Security Incident Response (SIR) Integration allows the lo
 
 To learn more about ServiceNow Security Incident Response (SIR), visit the [official website](https://docs.servicenow.com/bundle/orlando-security-management/page/product/security-incident-response/reference/sir-landing-page.html).
 
+## Required Permissions
+
+The user or API key used to authenticated to ServiceNow SIR requires the following table permissions:
+
+| Table | Permission | Description |
+| ------ | ------ | ------ |
+| sn_ti_observable | Read | Required to search indicators such as IPv4, CVE, Domain etc. |
+| sn_si_incident | Read | Required for searching incident numbers of the format `SIRXXXXXXX`  |
+| sn_si_task | Read | Required for searching task numbers of the format `SITXXXXXXX` | 
+
 ## ServiceNow Security Incident Response (SIR) Integration Options
 
 ### ServiceNow Server URL
