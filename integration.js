@@ -1,5 +1,5 @@
 const async = require('async');
-const request = require('request');
+const request = require('postman-request');
 const config = require('./config/config');
 const fs = require('fs');
 const incidentLayout = require('./models/incident-layout');
@@ -75,17 +75,33 @@ function queryIncidents(
     Logger.trace({ requestOptions: requestOptions }, 'Checking out request');
 
     requestWithDefaults(requestOptions, (err, resp, body) => {
-      if (err || resp.statusCode != 200) {
-        Logger.error('error during entity lookup', {
-          error: err,
-          statusCode: resp ? resp.statusCode : null
-        });
-
-        return cb(
-          err || {
-            detail: 'non-200 http status code: ' + resp.statusCode
-          }
+      if (err) {
+        Logger.error(
+          {
+            err
+          },
+          'Network error while querying incidents'
         );
+
+        return cb({
+          detail: 'Network error while querying incidents',
+          err
+        });
+      }
+
+      if (resp && resp.statusCode !== 200) {
+        Logger.error(
+          {
+            body,
+            statusCode: resp.statusCode
+          },
+          'API error while looking querying incidents'
+        );
+
+        return cb({
+          detail: `Unexpected status code ${resp.statusCode} received`,
+          body
+        });
       }
 
       const queryResult = body.result || [];
@@ -178,7 +194,6 @@ function getSummaryTags(entityObj, results) {
   }
 
   return results.reduce((acc, result) => {
-    Logger.info('result: ', result);
     summaryProperties.forEach((prop) => {
       if (typeof result[prop] !== 'undefined') {
         const tag = result[prop];
