@@ -29,7 +29,7 @@ module.exports = {
   customTypes: [
     {
       key: 'incident',
-      regex: /SIR[0-9]{7,}/
+      regex: /(SN)?SIR[0-9]{7,}/
     },
     {
       key: 'task',
@@ -75,7 +75,7 @@ module.exports = {
     ca: '',
     // An HTTP proxy to be used. Supports proxy Auth with Basic Auth, identical to support for
     // the url parameter (by embedding the auth info in the uri)
-    proxy: ""
+    proxy: ''
   },
   logging: {
     level: 'info' //trace, debug, info, warn, error, fatal

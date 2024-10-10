@@ -14,7 +14,7 @@
   "customTypes": [
     {
       "key": "incident",
-      "regex": "SIR[0-9]{7,}"
+      "regex": "(SN)?SIR[0-9]{7,}"
     },
     {
       "key": "task",
@@ -40,7 +40,7 @@
     "proxy": ""
   },
   "logging": {
-    "level": "info"
+    "level": "trace"
   },
   "options": [
     {
