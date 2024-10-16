@@ -24,12 +24,12 @@ module.exports = {
    */
   description:
     'ServiceNow Security Incident Response (SIR) allows your organization to manage the life cycle of your security incidents from initial analysis to containment, eradication, and recovery.',
-  entityTypes: ['ipv4', 'email', 'domain', 'hash', 'cve'],
+  entityTypes: ['IPv4', 'email', 'domain', 'hash', 'cve'],
   defaultColor: 'light-purple',
   customTypes: [
     {
       key: 'incident',
-      regex: /SIR[0-9]{7,}/
+      regex: /(SN)?SIR[0-9]{7,}/
     },
     {
       key: 'task',
@@ -75,7 +75,7 @@ module.exports = {
     ca: '',
     // An HTTP proxy to be used. Supports proxy Auth with Basic Auth, identical to support for
     // the url parameter (by embedding the auth info in the uri)
-    proxy: ""
+    proxy: ''
   },
   logging: {
     level: 'info' //trace, debug, info, warn, error, fatal
