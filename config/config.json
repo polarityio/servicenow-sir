@@ -3,13 +3,7 @@
   "name": "ServiceNow Security Incident Response (SIR)",
   "acronym": "SNSIR",
   "description": "ServiceNow Security Incident Response (SIR) allows your organization to manage the life cycle of your security incidents from initial analysis to containment, eradication, and recovery.",
-  "entityTypes": [
-    "IPv4",
-    "email",
-    "domain",
-    "hash",
-    "cve"
-  ],
+  "entityTypes": ["IPv4", "email", "domain", "MD5", "SHA1", "SHA256", "cve"],
   "defaultColor": "light-purple",
   "customTypes": [
     {
@@ -21,9 +15,7 @@
       "regex": "SIT[0-9]{7,}"
     }
   ],
-  "styles": [
-    "./styles/service-now.less"
-  ],
+  "styles": ["./styles/service-now.less"],
   "block": {
     "component": {
       "file": "./components/service-now-block.js"
@@ -31,13 +23,6 @@
     "template": {
       "file": "./templates/service-now-block.hbs"
     }
-  },
-  "request": {
-    "cert": "",
-    "key": "",
-    "passphrase": "",
-    "ca": "",
-    "proxy": ""
   },
   "logging": {
     "level": "info"
