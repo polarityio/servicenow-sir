@@ -24,7 +24,7 @@ module.exports = {
    */
   description:
     'ServiceNow Security Incident Response (SIR) allows your organization to manage the life cycle of your security incidents from initial analysis to containment, eradication, and recovery.',
-  entityTypes: ['ipv4', 'email', 'domain', 'hash', 'cve'],
+  entityTypes: ['IPv4', 'email', 'domain', 'hash', 'cve'],
   defaultColor: 'light-purple',
   customTypes: [
     {
