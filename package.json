@@ -1,12 +1,12 @@
 {
   "name": "servicenow-sir",
-  "version": "3.2.5",
+  "version": "3.2.6",
   "main": "./integration.js",
   "private": true,
   "license": "MIT",
   "author": "Polarity",
   "dependencies": {
-    "async": "^3.2.4",
-    "postman-request": "^2.88.1-postman.31"
+    "async": "^3.2.5",
+    "postman-request": "^2.88.1-postman.40"
   }
 }

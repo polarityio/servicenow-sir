@@ -1,57 +1,21 @@
 module.exports = {
-  /**
-   * Name of the integration which is displayed in the Polarity integrations user interface
-   *
-   * @type String
-   * @required
-   */
   name: 'ServiceNow Security Incident Response (SIR)',
-  /**
-   * The acronym that appears in the notification window when information from this integration
-   * is displayed.  Note that the acronym is included as part of each "tag" in the summary information
-   * for the integration.  As a result, it is best to keep it to 4 or less characters.  The casing used
-   * here will be carried forward into the notification window.
-   *
-   * @type String
-   * @required
-   */
   acronym: 'SNSIR',
-  /**
-   * Description for this integration which is displayed in the Polarity integrations user interface
-   *
-   * @type String
-   * @optional
-   */
   description:
     'ServiceNow Security Incident Response (SIR) allows your organization to manage the life cycle of your security incidents from initial analysis to containment, eradication, and recovery.',
-  entityTypes: ['ipv4', 'email', 'domain', 'hash', 'cve'],
+  entityTypes: ['IPv4', 'email', 'domain', 'MD5', 'SHA1', 'SHA256', 'cve'],
   defaultColor: 'light-purple',
   customTypes: [
     {
       key: 'incident',
-      regex: /SIR[0-9]{7,}/
+      regex: '(SN)?SIR[0-9]{7,}'
     },
     {
       key: 'task',
-      regex: /SIT[0-9]{7,}/
+      regex: 'SIT[0-9]{7,}'
     }
   ],
-  /**
-   * An array of style files (css or less) that will be included for your integration. Any styles specified in
-   * the below files can be used in your custom template.
-   *
-   * @type Array
-   * @optional
-   */
   styles: ['./styles/service-now.less'],
-  /**
-   * Provide custom component logic and template for rendering the integration details block.  If you do not
-   * provide a custom template and/or component then the integration will display data as a table of key value
-   * pairs.
-   *
-   * @type Object
-   * @optional
-   */
   block: {
     component: {
       file: './components/service-now-block.js'
@@ -59,6 +23,9 @@ module.exports = {
     template: {
       file: './templates/service-now-block.hbs'
     }
+  },
+  logging: {
+    level: 'info'
   },
   request: {
     // Provide the path to your certFile. Leave an empty string to ignore this option.
@@ -75,19 +42,8 @@ module.exports = {
     ca: '',
     // An HTTP proxy to be used. Supports proxy Auth with Basic Auth, identical to support for
     // the url parameter (by embedding the auth info in the uri)
-    proxy: ""
+    proxy: ''
   },
-  logging: {
-    level: 'info' //trace, debug, info, warn, error, fatal
-  },
-
-  /**
-   * Options that are displayed to the user/admin in the Polarity integration user-interface.  Should be structured
-   * as an array of option objects.
-   *
-   * @type Array
-   * @optional
-   */
   options: [
     {
       key: 'url',
@@ -121,11 +77,7 @@ module.exports = {
       key: 'apiKey',
       name: 'API Key',
       description:
-        'The API Key used to access ServiceNows Rest API.  If this is being used, then you ' +
-        'will not need to use a Username and Password. This API Key will be prioritized ' +
-        'over the username password combination. For more information, checkout this ' +
-        'link here: https://developer.servicenow.com/dev.do#!/learn/learning-plans/paris/' +
-        'servicenow_application_developer/app_store_learnv2_rest_paris_creating_credentials',
+        'The API Key used to access ServiceNows Rest API.  If this is being used, then you will not need to use a Username and Password. This API Key will be prioritized over the username password combination. For more information, checkout this link here: https://developer.servicenow.com/dev.do#!/learn/learning-plans/paris/servicenow_application_developer/app_store_learnv2_rest_paris_creating_credentials',
       default: '',
       type: 'password',
       userCanEdit: true,
