@@ -26,28 +26,32 @@ const updateTicket = (
   callback,
   Logger
 ) => {
+  if (!options.enableEditingIncidents) {
+    return callback({
+      detail: 'Editing incidents is not allowed'
+    });
+  }
+
   const requestOptions = {
     url: `${options.url}/api/now/table/sn_si_incident/${sysId}`,
     method: 'PATCH',
-    auth: {
-      username: options.username,
-      password: options.password
-    },
-    headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json'
-    },
+    ...(options.apiKey
+      ? { headers: { [options.apiKeyHeader]: options.apiKey } }
+      : {
+          auth: {
+            username: options.username,
+            password: options.password
+          }
+        }),
     body: {
       description,
       work_notes: workNotes,
-
       state: INCIDENT_STATE_CODES[state],
-
       business_criticality: INCIDENT_IMPACT_CODES[businessImpact],
-
       category,
       subcategory
-    }
+    },
+    json: true
   };
 
   requestWithDefaults(requestOptions, (err, response, body) => {

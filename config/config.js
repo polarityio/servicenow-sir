@@ -24,9 +24,6 @@ module.exports = {
       file: './templates/service-now-block.hbs'
     }
   },
-  logging: {
-    level: 'info'
-  },
   request: {
     // Provide the path to your certFile. Leave an empty string to ignore this option.
     // Relative paths are relative to the ServiceNow integration's root directory
@@ -44,6 +41,9 @@ module.exports = {
     // the url parameter (by embedding the auth info in the uri)
     proxy: ''
   },
+  logging: {
+    level: 'info'
+  },
   options: [
     {
       key: 'url',
@@ -53,7 +53,7 @@ module.exports = {
       default: '',
       type: 'text',
       userCanEdit: false,
-      adminOnly: true
+      adminOnly: false
     },
     {
       key: 'username',
@@ -61,8 +61,8 @@ module.exports = {
       description: 'The username to login to ServiceNow with',
       default: '',
       type: 'text',
-      userCanEdit: true,
-      adminOnly: false
+      userCanEdit: false,
+      adminOnly: true
     },
     {
       key: 'password',
@@ -70,17 +70,37 @@ module.exports = {
       description: 'The password to login to ServiceNow with',
       default: '',
       type: 'password',
-      userCanEdit: true,
-      adminOnly: false
+      userCanEdit: false,
+      adminOnly: true
     },
     {
       key: 'apiKey',
       name: 'API Key',
       description:
-        'The API Key used to access ServiceNows Rest API.  If this is being used, then you will not need to use a Username and Password. This API Key will be prioritized over the username password combination. For more information, checkout this link here: https://developer.servicenow.com/dev.do#!/learn/learning-plans/paris/servicenow_application_developer/app_store_learnv2_rest_paris_creating_credentials',
+        'The API Key used to access ServiceNow Rest API.  If this is being used, then you will not need to use a Username and Password. This API Key will be prioritized over the username password combination.',
       default: '',
       type: 'password',
-      userCanEdit: true,
+      userCanEdit: false,
+      adminOnly: true
+    },
+    {
+      key: 'apiKeyHeader',
+      name: 'API Key Request Header Name',
+      description:
+        'The API Key request header to be used if authenticating via API Key.  Defaults to `x-sn-apikey`.',
+      default: 'x-sn-apikey',
+      type: 'text',
+      userCanEdit: false,
+      adminOnly: true
+    },
+    {
+      key: 'enableEditingIncidents',
+      name: 'Enable Editing Incidents',
+      description:
+        'If checked, the ServiceNow SIR integration will allow users to edit searched incidents.  Defaults to disabled.  This option should be set to "Lock and Show Option for All Users"',
+      default: false,
+      type: 'boolean',
+      userCanEdit: false,
       adminOnly: false
     }
   ]

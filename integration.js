@@ -38,6 +38,11 @@ function doLookup(entities, options, cb) {
   );
 }
 
+function queryObservables() {
+  
+}
+
+
 function queryIncidents(
   entityObj,
   options,
@@ -57,7 +62,7 @@ function queryIncidents(
     let requestOptions = {
       uri: `${options.url}/api/now/table/${queryObj.table}`,
       ...(options.apiKey
-        ? { headers: { Authorization: `key ${options.apiKey}` } }
+        ? { headers: { [options.apiKeyHeader]: options.apiKey } }
         : {
             auth: {
               username: options.username,
@@ -103,6 +108,8 @@ function queryIncidents(
           body
         });
       }
+
+      Logger.trace({ body }, 'Raw Incident Search Result');
 
       const queryResult = body.result || [];
 
@@ -251,36 +258,10 @@ function onDetails(lookupObject, options, cb) {
 
 function startup(logger) {
   Logger = logger;
+
   const requestOptions = {
     json: true
   };
-
-  if (typeof config.request.cert === 'string' && config.request.cert.length > 0) {
-    requestOptions.cert = fs.readFileSync(config.request.cert);
-  }
-
-  if (typeof config.request.key === 'string' && config.request.key.length > 0) {
-    requestOptions.key = fs.readFileSync(config.request.key);
-  }
-
-  if (
-    typeof config.request.passphrase === 'string' &&
-    config.request.passphrase.length > 0
-  ) {
-    requestOptions.passphrase = config.request.passphrase;
-  }
-
-  if (typeof config.request.ca === 'string' && config.request.ca.length > 0) {
-    requestOptions.ca = fs.readFileSync(config.request.ca);
-  }
-
-  if (typeof config.request.proxy === 'string' && config.request.proxy.length > 0) {
-    requestOptions.proxy = config.request.proxy;
-  }
-
-  if (typeof config.request.rejectUnauthorized === 'boolean') {
-    requestOptions.rejectUnauthorized = config.request.rejectUnauthorized;
-  }
 
   requestWithDefaults = request.defaults(requestOptions);
 }

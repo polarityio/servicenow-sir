@@ -6,11 +6,13 @@
           Details
         </a>
       </li>
-      <li class="nav-item">
-        <a {{action "changeTab" "edit"}} class="nav-link {{if (eq activeTab "edit") "active"}}" href="#">
-          Edit
-        </a>
-      </li>
+      {{#if block.userOptions.enableEditingIncidents}}
+        <li class="nav-item">
+          <a {{action "changeTab" "edit"}} class="nav-link {{if (eq activeTab "edit") "active"}}" href="#">
+            Edit
+          </a>
+        </li>
+      {{/if}}
     </ul>
   {{/if}}
   {{#if (eq activeTab "details")}}
@@ -99,7 +101,7 @@
       {{/each}}
     {{/each}}
   {{/if}}
-  {{#if (eq activeTab "edit")}}
+  {{#if (and (eq activeTab "edit") block.userOptions.enableEditingIncidents)}}
     {{#if ticketClosed}}
       <span class="p-key note"><em><b>NOTE:</b></em> This ticket is Closed and cannot be Edited</span>
     {{/if}}

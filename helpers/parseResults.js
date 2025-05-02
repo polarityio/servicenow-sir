@@ -40,7 +40,15 @@ const propertyMap = {
   }
 };
 
-function parseResults(type, results, withDetails, options, requestWithDefaults, Logger, cb) {
+function parseResults(
+  type,
+  results,
+  withDetails,
+  options,
+  requestWithDefaults,
+  Logger,
+  cb
+) {
   if (typeof withDetails === 'undefined') {
     withDetails = false;
   }
@@ -49,10 +57,18 @@ function parseResults(type, results, withDetails, options, requestWithDefaults, 
   async.each(
     results,
     (result, next) => {
-      parseResult(type, result, withDetails, options, requestWithDefaults, Logger, (err, parsedResult) => {
-        parsedResults.push(parsedResult);
-        next(err);
-      });
+      parseResult(
+        type,
+        result,
+        withDetails,
+        options,
+        requestWithDefaults,
+        Logger,
+        (err, parsedResult) => {
+          parsedResults.push(parsedResult);
+          next(err);
+        }
+      );
     },
     (err) => {
       cb(err, parsedResults);
@@ -60,7 +76,15 @@ function parseResults(type, results, withDetails, options, requestWithDefaults, 
   );
 }
 
-function parseResult(type, result, withDetails, options, requestWithDefaults, Logger, cb) {
+function parseResult(
+  type,
+  result,
+  withDetails,
+  options,
+  requestWithDefaults,
+  Logger,
+  cb
+) {
   let parsedResult = {};
 
   if (typeof propertyMap[type] !== 'undefined') {
@@ -73,7 +97,6 @@ function parseResult(type, result, withDetails, options, requestWithDefaults, Lo
           if (valueIsLink(resultValue) && !linkIsProcessed(resultValue)) {
             // this property is a link so we need to traverse it
             if (withDetails) {
-
               getDetailsInformation(
                 resultValue.link,
                 options,
@@ -145,8 +168,6 @@ function parseResult(type, result, withDetails, options, requestWithDefaults, Lo
   }
 }
 
-
-
 function valueIsProcessed(resultValue) {
   if (resultValue !== null && resultValue.isProcessed === true) {
     return true;
@@ -197,12 +218,17 @@ const transformPropertyValue = (propertyObj, value, parentObj) => ({
 });
 
 function getDetailsInformation(link, options, requestWithDefaults, cb) {
-  const requestOptions = {
+  let requestOptions = {
     uri: link,
-    auth: {
-      username: options.username,
-      password: options.password
-    }
+    ...(options.apiKey
+      ? { headers: { [options.apiKeyHeader]: options.apiKey } }
+      : {
+          auth: {
+            username: options.username,
+            password: options.password
+          }
+        }),
+    json: true
   };
 
   requestWithDefaults(requestOptions, (err, response, body) => {
