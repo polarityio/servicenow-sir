@@ -74,21 +74,19 @@ const CATEGORIES_WITH_SUBCATEGORIES = {
     'C&amp;C Communication inbound',
     'C&amp;C communication outbound'
   ],
-  'Insider Breach': [],
-  undefined: [],
-  "": []
+  'Insider Breach': []
 };
 
-const POSSIBLE_BUSINESS_IMPACTS = ["1 - Critical", "2 - High", "3 - Non-critical"];
+const POSSIBLE_BUSINESS_IMPACTS = ['1 - Critical', '2 - High', '3 - Non-critical'];
 
 const INCIDENT_STATE_CODES = {
-  Analysis: "16",
-  Contain: "18",
-  Eradicate: "19",
-  Recover: "20",
-  Review: "100",
-  Closed: "3",
-  Cancelled: "7"
+  Analysis: '16',
+  Contain: '18',
+  Eradicate: '19',
+  Recover: '20',
+  Review: '100',
+  Closed: '3',
+  Cancelled: '7'
 };
 
 const INCIDENT_IMPACT_CODES = {
@@ -98,22 +96,22 @@ const INCIDENT_IMPACT_CODES = {
 };
 
 const INCIDENT_PRIORITY_CODES = {
-  undefined: "-- None --",
-  0: "-- None --",
-  1: "1 - Critical",
-  2: "2 - High",
-  3: "3 - Moderate",
-  4: "4 - Low",
-  5: "5 - Planning",
-}
+  undefined: '-- None --',
+  0: '-- None --',
+  1: '1 - Critical',
+  2: '2 - High',
+  3: '3 - Moderate',
+  4: '4 - Low',
+  5: '5 - Planning'
+};
 
 const INCIDENT_SEVERITY_CODES = {
-  undefined: "-- None --",
-  0: "-- None --",
-  1: "1 - High",
-  2: "2 - Medium",
-  3: "3 - Low"
-}
+  undefined: '-- None --',
+  0: '-- None --',
+  1: '1 - High',
+  2: '2 - Medium',
+  3: '3 - Low'
+};
 
 const INCIDENT_BUSINESS_IMPACT_CODES = {
   undefined: '-- None --',

@@ -114,5 +114,9 @@ module.exports = {
   closed_by: {
     title: 'Closed By',
     type: 'sys_user'
+  },
+  parent: {
+    title: 'Parent Incident',
+    type: 'incident'
   }
 };

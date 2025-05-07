@@ -86,7 +86,6 @@ const updateTicket = (
       true,
       options,
       requestWithDefaults,
-      Logger,
       (err, [parsedResult]) => {
         if (err)
           return callback({

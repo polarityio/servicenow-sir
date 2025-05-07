@@ -1,7 +1,10 @@
 const async = require('async');
 const incidentModel = require('../models/incident-model');
+const observableModel = require('../models/observable-model');
+const { getLogger } = require('./logger');
 
 const propertyMap = {
+  observable: observableModel,
   task: incidentModel,
   incident: incidentModel,
   sys_user: {
@@ -40,15 +43,7 @@ const propertyMap = {
   }
 };
 
-function parseResults(
-  type,
-  results,
-  withDetails,
-  options,
-  requestWithDefaults,
-  Logger,
-  cb
-) {
+function parseResults(type, results, withDetails, options, requestWithDefaults, cb) {
   if (typeof withDetails === 'undefined') {
     withDetails = false;
   }
@@ -59,13 +54,17 @@ function parseResults(
     (result, next) => {
       parseResult(
         type,
-        result,
+        // If result.fields is present then these results have been parsed once before
+        // and this call is happening from `onDetails`.
+        result.fields ? result.fields : result,
         withDetails,
         options,
         requestWithDefaults,
-        Logger,
         (err, parsedResult) => {
-          parsedResults.push(parsedResult);
+          parsedResults.push({
+            hasMatchedObservable: result.observable ? true : false,
+            fields: parsedResult
+          });
           next(err);
         }
       );
@@ -76,15 +75,7 @@ function parseResults(
   );
 }
 
-function parseResult(
-  type,
-  result,
-  withDetails,
-  options,
-  requestWithDefaults,
-  Logger,
-  cb
-) {
+function parseResult(type, result, withDetails, options, requestWithDefaults, cb) {
   let parsedResult = {};
 
   if (typeof propertyMap[type] !== 'undefined') {
@@ -112,7 +103,6 @@ function parseResult(
                     true,
                     options,
                     requestWithDefaults,
-                    Logger,
                     (parseDetailsError, parsedDetailsResult) => {
                       if (parseDetailsError) {
                         return nextProperty(parseDetailsError);

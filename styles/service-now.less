@@ -1,16 +1,18 @@
-.block{
+@search-result-border-color: #ddd;
+
+.block {
   margin-bottom: 5px;
+  word-wrap: break-word;
+  word-break: break-word;
 }
 
-hr { 
-  display: block;
-  margin-top: 0.5em;
-  margin-bottom: 0.5em;
-  margin-left: auto;
-  margin-right: auto;
-  border-style: inset;
-  border-width: 1px;
-} 
+.result-container {
+  margin-bottom: 20px;
+  
+  &:last-child {
+    margin-bottom: 0px;
+  }
+}
 
 .select-container {
   display: flex;
@@ -21,12 +23,15 @@ hr {
   &.first {
     padding-top: 7px;
   }
+
   .p-value {
     width: 100px;
   }
+
   .dropdown {
     max-width: 170px;
   }
+
   .input-field {
     min-width: 170px;
   }
@@ -35,6 +40,7 @@ hr {
 
 .new-line {
   padding-bottom: 7px;
+
   &:first-child {
     padding-top: 3px;
   }

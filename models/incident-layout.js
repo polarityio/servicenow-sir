@@ -106,7 +106,8 @@ module.exports = [
     depth: 1,
     type: 'title',
     icon: 'door-open',
-    userLink: true
+    userLink: true,
+    onDetails: true
   },
   {
     path: 'opened_by.details.name',
@@ -129,7 +130,8 @@ module.exports = [
     depth: 1,
     type: 'title',
     icon: 'user',
-    userLink: true
+    userLink: true,
+    onDetails: true
   },
   {
     path: 'assigned_to.details.name',
@@ -157,7 +159,8 @@ module.exports = [
     depth: 1,
     type: 'title',
     icon: 'check',
-    userLink: true
+    userLink: true,
+    onDetails: true
   },
   {
     path: 'resolved_by.details.name',
@@ -184,7 +187,8 @@ module.exports = [
     depth: 1,
     type: 'title',
     icon: 'door-closed',
-    userLink: true
+    userLink: true,
+    onDetails: true
   },
   {
     path: 'closed_by.details.name',

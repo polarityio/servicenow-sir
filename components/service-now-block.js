@@ -1,5 +1,6 @@
 polarity.export = PolarityComponent.extend({
   details: Ember.computed.alias('block.data.details'),
+  results: Ember.computed.alias('details.results'),
   activeTab: 'details',
   description: '',
   workNotes: '',
@@ -17,62 +18,66 @@ polarity.export = PolarityComponent.extend({
   updateIsRunning: false,
   ticketClosed: false,
   init() {
-    const details = this.get('details');
-    const [result] = details.results;
-    if (this.get('details.isIncident') && result) {
-      this.set('description', result.description && result.description.value);
-      this.set(
-        'businessImpact',
-        result.business_criticality && result.business_criticality.value
-      );
-      this.set('work_notes', result.work_notes && result.work_notes.value);
-      this.set('state', result.state && result.state.value);
-      this.set('sysId', result.sys_id && result.sys_id.value);
-      this.set('category', (result.category && result.category.value) || '-- None --');
-      this.set(
-        'subcategory',
-        (result.subcategory && result.subcategory.value) || '-- None --'
-      );
-      this.set(
-        'ticketClosed',
-        (result.state && result.state.value === 'Closed') ||
-          result.state.value === 'Cancelled'
-      );
-
-      this.set('possibleBusinessImpacts', details.possibleBusinessImpacts);
-      this.set('possibleCategories', details.possibleCategories);
-      this.set('possibleSubcategories', details.possibleSubcategories);
-      this.set('possibleStates', details.possibleStates);
-    }
+    // const details = this.get('details');
+    // const [result] = details.results;
+    // if (this.get('details.isIncident') && result) {
+    //   this.set('description', result.description && result.description.value);
+    //   this.set(
+    //     'businessImpact',
+    //     result.business_criticality && result.business_criticality.value
+    //   );
+    //   this.set('work_notes', result.work_notes && result.work_notes.value);
+    //   this.set('state', result.state && result.state.value);
+    //   this.set('sysId', result.sys_id && result.sys_id.value);
+    //   this.set('category', (result.category && result.category.value) || '-- None --');
+    //   this.set(
+    //     'subcategory',
+    //     (result.subcategory && result.subcategory.value) || '-- None --'
+    //   );
+    //   this.set(
+    //     'ticketClosed',
+    //     (result.state && result.state.value === 'Closed') ||
+    //       result.state.value === 'Cancelled'
+    //   );
+    //
+    //   this.set('possibleBusinessImpacts', details.possibleBusinessImpacts);
+    //   this.set('possibleCategories', details.possibleCategories);
+    //   this.set('possibleSubcategories', details.possibleSubcategories);
+    //   this.set('possibleStates', details.possibleStates);
+    // }
 
     this._super(...arguments);
   },
   actions: {
-    changeTab: function (tabName) {
-      this.set('activeTab', tabName);
+    changeTab: function (tabName, resultIndex) {
+      this.set(`results.${resultIndex}.__activeTab`, tabName);
+      if (
+        tabName === 'observables' &&
+        !this.get(`results.${resultIndex}.__observables`)
+      ) {
+        this.getObservables(resultIndex);
+      }
     },
     updateTicket: function () {
-      const outerThis = this;
-      outerThis.set('updateMessage', '');
-      outerThis.set('updateErrorMessage', '');
-      outerThis.set('updateIsRunning', true);
-      outerThis.get('block').notifyPropertyChange('data');
+      this.set('updateMessage', '');
+      this.set('updateErrorMessage', '');
+      this.set('updateIsRunning', true);
+      this.get('block').notifyPropertyChange('data');
 
-      outerThis
-        .sendIntegrationMessage({
-          action: 'updateTicket',
-          data: {
-            entity: outerThis.get('block.entity'),
-            sysId: outerThis.get('sysId'),
-            description: outerThis.get('description'),
-            workNotes: outerThis.get('workNotes'),
-            state: outerThis.get('state'),
-            businessImpact: outerThis.get('businessImpact'),
-            category: outerThis.get('category'),
-            subcategory: outerThis.get('subcategory'),
-            work_notes: outerThis.get('work_notes')
-          }
-        })
+      this.sendIntegrationMessage({
+        action: 'updateTicket',
+        data: {
+          entity: this.get('block.entity'),
+          sysId: this.get('sysId'),
+          description: this.get('description'),
+          workNotes: this.get('workNotes'),
+          state: this.get('state'),
+          businessImpact: this.get('businessImpact'),
+          category: this.get('category'),
+          subcategory: this.get('subcategory'),
+          work_notes: this.get('work_notes')
+        }
+      })
         .then(
           ({
             results,
@@ -81,17 +86,17 @@ polarity.export = PolarityComponent.extend({
             possibleCategories,
             possibleSubcategories
           }) => {
-            outerThis.set('details.results', results);
-            outerThis.set('possibleBusinessImpacts', possibleBusinessImpacts);
-            outerThis.set('possibleCategories', possibleCategories);
-            outerThis.set('possibleSubcategories', possibleSubcategories);
-            outerThis.set('possibleStates', possibleStates);
-            outerThis.set('updateMessage', 'Successfully Updated');
+            this.set('details.results', results);
+            this.set('possibleBusinessImpacts', possibleBusinessImpacts);
+            this.set('possibleCategories', possibleCategories);
+            this.set('possibleSubcategories', possibleSubcategories);
+            this.set('possibleStates', possibleStates);
+            this.set('updateMessage', 'Successfully Updated');
           }
         )
         .catch((err) => {
           console.log(err);
-          outerThis.set(
+          this.set(
             'updateErrorMessage',
             'Updating Ticket Failed: ' +
               (err &&
@@ -100,35 +105,32 @@ polarity.export = PolarityComponent.extend({
           );
         })
         .finally(() => {
-          outerThis.set('updateIsRunning', false);
-          outerThis.get('block').notifyPropertyChange('data');
+          this.set('updateIsRunning', false);
           setTimeout(() => {
-            outerThis.set('updateMessage', '');
-            outerThis.set('updateErrorMessage', '');
-            outerThis.get('block').notifyPropertyChange('data');
+            if (!this.isDestroyed) {
+              this.set('updateMessage', '');
+              this.set('updateErrorMessage', '');
+            }
           }, 5000);
         });
     },
     changeCategory: function (category) {
-      const outerThis = this;
-      outerThis.set('category', category);
-      outerThis.set('updateMessage', 'Loading Subcategories...');
-      outerThis.set('updateErrorMessage', '');
-      outerThis.get('block').notifyPropertyChange('data');
+      this.set('category', category);
+      this.set('updateMessage', 'Loading Subcategories...');
+      this.set('updateErrorMessage', '');
 
-      outerThis
-        .sendIntegrationMessage({
-          action: 'getSubcategories',
-          data: {
-            category
-          }
-        })
+      this.sendIntegrationMessage({
+        action: 'getSubcategories',
+        data: {
+          category
+        }
+      })
         .then(({ possibleSubcategories }) => {
-          outerThis.set('subcategory', '-- None --');
-          outerThis.set('possibleSubcategories', possibleSubcategories);
+          this.set('subcategory', '-- None --');
+          this.set('possibleSubcategories', possibleSubcategories);
         })
         .catch((err) => {
-          outerThis.set(
+          this.set(
             'updateErrorMessage',
             'Updating Subcategory Options Failed: ' +
               (err &&
@@ -137,13 +139,37 @@ polarity.export = PolarityComponent.extend({
           );
         })
         .finally(() => {
-          outerThis.set('updateMessage', '');
-          outerThis.get('block').notifyPropertyChange('data');
+          this.set('updateMessage', '');
           setTimeout(() => {
-            outerThis.set('updateErrorMessage', '');
-            outerThis.get('block').notifyPropertyChange('data');
+            if (!this.isDestroyed) {
+              this.set('updateErrorMessage', '');
+            }
           }, 5000);
         });
     }
+  },
+  getObservables: function (resultIndex) {
+    const incidentId = this.get(`results.${resultIndex}.fields.sys_id.value`);
+
+    const payload = {
+      action: 'getObservables',
+      data: {
+        incidentId
+      }
+    };
+
+    this.set(`results.${resultIndex}.__loadingObservables`, true);
+
+    this.sendIntegrationMessage(payload)
+      .then((result) => {
+        this.set(`results.${resultIndex}.__observables`, result.observables);
+      })
+      .catch((err) => {
+        console.error('Error loading observables', err);
+        this.set(`results.${resultIndex}.__error`, JSON.stringify(err, null, 2));
+      })
+      .finally(() => {
+        this.set(`results.${resultIndex}.__loadingObservables`, false);
+      });
   }
 });

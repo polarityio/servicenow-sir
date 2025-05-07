@@ -92,16 +92,6 @@ module.exports = {
       type: 'text',
       userCanEdit: false,
       adminOnly: true
-    },
-    {
-      key: 'enableEditingIncidents',
-      name: 'Enable Editing Incidents',
-      description:
-        'If checked, the ServiceNow SIR integration will allow users to edit searched incidents.  Defaults to disabled.  This option should be set to "Lock and Show Option for All Users"',
-      default: false,
-      type: 'boolean',
-      userCanEdit: false,
-      adminOnly: false
     }
   ]
 };

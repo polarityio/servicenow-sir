@@ -1,4 +1,3 @@
-
 const {
   POSSIBLE_BUSINESS_IMPACTS,
   CATEGORIES_WITH_SUBCATEGORIES,
@@ -17,6 +16,5 @@ const getDropdownOptions = ([parsedResults]) => ({
       parsedResults && parsedResults.category && parsedResults.category.value
     ] || []
 });
-
 
 module.exports = getDropdownOptions;
