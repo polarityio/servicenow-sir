@@ -498,30 +498,54 @@ function getObservables(incidentId, options, cb) {
 }
 
 function getSummaryTags(entityObj, results) {
-  let summaryProperties;
+  const tags = [];
 
-  if (entityObj.types.indexOf('custom.incident') > -1) {
-    summaryProperties = ['category', 'phase'];
-  } else if (entityObj.types.indexOf('custom.task') > -1) {
-    summaryProperties = ['category', 'phase', 'priority'];
-  } else {
-    summaryProperties = ['finding'];
-  }
-
-  return results.reduce((acc, result) => {
-    summaryProperties.forEach((prop) => {
-      if (typeof result[prop] !== 'undefined' && result[prop] !== null) {
-        const tag = result[prop];
-        acc.push(prop === 'priority' ? `Priority: ${tag}` : tag);
+  if (results.length > 1) {
+    tags.push(`${results.length} incidents`);
+    const numObservables = results.reduce((acc, result) => {
+      if (result.observable) {
+        acc++;
       }
-    });
-
-    if (typeof result.active !== 'undefined') {
-      acc.push(result.active === 'true' ? 'active' : 'inactive');
+      return acc;
+    }, 0);
+    if (numObservables > 0) {
+      tags.push(`${numObservables} observable${numObservables > 1 ? 's' : ''}`);
+    }
+  } else {
+    let result = results[0];
+    if (entityObj.type !== 'custom') {
+      // no need for the ticket number since this is custom
+      tags.push(result.number);
     }
 
-    return acc;
-  }, []);
+    let status = '';
+
+    if (typeof result.active === 'string') {
+      status = result.active === 'true' ? 'Active' : 'Inactive';
+    }
+
+    if (typeof result.state === 'string') {
+      if (status.length > 0) {
+        status += ` (${result.state})`;
+      } else {
+        status += result.state;
+      }
+    }
+
+    if (status.length > 0) {
+      tags.push(status);
+    }
+
+    if (typeof result.priority === 'string') {
+      tags.push(`Priority: ${result.priority}`);
+    }
+
+    if (tags.length === 0) {
+      tags.push(`1 incident`);
+    }
+  }
+
+  return tags;
 }
 
 function onDetails(lookupObject, options, cb) {

@@ -118,5 +118,9 @@ module.exports = {
   parent: {
     title: 'Parent Incident',
     type: 'incident'
+  },
+  comments_and_work_notes: {
+    title: 'Comments and Work Notes',
+    type: 'incident'
   }
 };

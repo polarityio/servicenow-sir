@@ -23,7 +23,13 @@ module.exports = [
   },
   {
     path: 'short_description',
-    depth: 0
+    depth: 0,
+    type: 'block'
+  },
+  {
+    path: 'comments_and_work_notes',
+    depth: 0,
+    type: 'pre'
   },
   {
     path: 'active',

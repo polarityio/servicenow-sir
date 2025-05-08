@@ -1,7 +1,6 @@
 polarity.export = PolarityComponent.extend({
   details: Ember.computed.alias('block.data.details'),
   results: Ember.computed.alias('details.results'),
-  activeTab: 'details',
   description: '',
   workNotes: '',
   state: '',
@@ -147,6 +146,10 @@ polarity.export = PolarityComponent.extend({
           }, 5000);
         });
     }
+  },
+  onDetailsError(error){
+    console.error('Error loading incident details', error);
+    this.set(`error`, JSON.stringify(error, null, 2));
   },
   getObservables: function (resultIndex) {
     const incidentId = this.get(`results.${resultIndex}.fields.sys_id.value`);
