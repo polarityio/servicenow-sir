@@ -1,6 +1,6 @@
 # Polarity ServiceNow Security Incident Response (SIR) Integration
 
-Polarity's ServiceNow Security Incident Response (SIR) Integration allows looking up ServiceNow security incidents by Incident Number (e.g. SIR00000012), as well as searching Incident description and short descriptions.  Additionally, the integration can search associated Observables for an Incident. 
+Polarity's ServiceNow Security Incident Response (SIR) Integration allows looking up ServiceNow security incidents by Incident Number (e.g. SIR00000012), as well as searching Incident description and short descriptions.  Additionally, the integration can search associated Observables for an Incident. Finally, the integration is able to look up tasks by the Task Number (e.g., SIT00010002).
 
 <div>
   <img width="50%" alt="Integration Example" src="./assets/overlay.png">
