@@ -1,213 +1,377 @@
-{{#if details.results}}
-  {{#if details.isIncident}}
-    <ul class="nav nav-tabs">
-      <li class="nav-item">
-        <a {{action "changeTab" "details"}} class="nav-link {{if (or (eq activeTab "details")(not activeTab)) "active"}}" href="#">
-          Details
-        </a>
-      </li>
-      <li class="nav-item">
-        <a {{action "changeTab" "edit"}} class="nav-link {{if (eq activeTab "edit") "active"}}" href="#">
-          Edit
-        </a>
-      </li>
-    </ul>
-  {{/if}}
-  {{#if (eq activeTab "details")}}
-    {{#each details.results as | result index | }}
-      {{#if (gt index 0)}}
-        <hr>
+{{#if error}}
+  <div class="alert alert-danger error-message mt-2">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+      <div class="error-message-title">
+        Error retrieving incident details
+      </div>
+      <div>
+        {{fa-icon icon="times" fixedWidth=true click=(set this "error" "") class="close-icon"}}
+      </div>
+    </div>
+    <div class="error-scrolling-container">
+      <pre>{{error}}</pre>
+    </div>
+  </div>
+{{/if}}
+{{#each results as | result index | }}
+  <div class="result-container">
+    {{#if details.isIncident}}
+      <ul class="nav nav-tabs">
+        <li class="nav-item">
+          <a {{action "changeTab" "details" index}} class="nav-link {{if (or (eq result.__activeTab "details")(not result.__activeTab)) "active"}}" href="#">
+            Details
+          </a>
+        </li>
+        <li class="nav-item">
+          <a {{action "changeTab" "observables" index}} class="nav-link {{if (eq result.__activeTab "observables") "active"}}" href="#">
+            {{#if result.hasMatchedObservable}}<span>{{fa-icon icon="check-circle" fixedWidth=true}}{{bs-tooltip title="Incident has matching Observable"}}</span>{{/if}}Observables {{#if (gte result.__observables.length 0)}}({{result.__observables.length}}){{/if}}
+          </a>
+        </li>
+        {{!--
+        {{#if block.userOptions.enableEditingIncidents}}
+          <li class="nav-item">
+            <a {{action "changeTab" "edit" index}} class="nav-link {{if (eq result.__activeTab "edit") "active"}}" href="#">
+              Edit
+            </a>
+          </li>
+        {{/if}}
+        --}}
+      </ul>
+    {{/if}}
+
+    {{#if result.__error}}
+      <div class="alert alert-danger error-message mt-2">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <div class="error-message-title">
+            Error retrieving observables
+          </div>
+          <div>
+            {{fa-icon icon="times" fixedWidth=true click=(set result "__error" "") class="close-icon"}}
+          </div>
+        </div>
+        <div class="error-scrolling-container">
+          <pre>{{result.__error}}</pre>
+        </div>
+      </div>
+    {{/if}}
+    
+    {{!-- Incident Details Tab --}}
+    {{#if (or (eq result.__activeTab "details")(not result.__activeTab))}}
+      {{#if result.hasMatchedObservable}}
+        <div class="p-footnote mb-1 mt-1">
+          Incident has an observable which matched the entity {{block.entity.value}}
+        </div>
       {{/if}}
       {{#each details.layout as | layout index| }}
-        {{#if (get result (concat layout.path ".value"))}}
-          {{#if (eq layout.type "title")}}
-            <h1 class="p-title pl-{{layout.depth}}">
-              {{#if layout.icon}}
-                {{fa-icon layout.icon fixedWidth=true}}
-              {{/if}}
-              {{#if layout.incidentLink}}
-                <a 
-                  class="p-link"
-                  href="{{block.userOptions.url}}/nav_to.do?uri=sn_si_incident.do?sys_id={{get result (concat layout.path ".sysId")}}"
-                >
-                  {{get result (concat layout.path ".value")}}
-                </a>
-                {{fa-icon "external-link" class="p-link ml-1"}}
-              {{/if}}
-              {{#if layout.observableLink}}
-                <a
-                  class="p-link"
-                  href="{{block.userOptions.url}}/nav_to.do?uri=sn_ti_observable.do?sys_id={{get result (concat layout.path ".sysId")}}"
-                >
-                  {{get result (concat layout.path ".value")}}
-                </a>
-                {{fa-icon "external-link" class="p-link ml-1"}}
-              {{/if}}
-              {{#if layout.taskLink}}
-                <a
-                  class="p-link"
-                  href="{{block.userOptions.url}}/nav_to.do?uri=/sn_si_task.do?sys_id={{get result (concat layout.path ".sysId")}}"
-                >
-                  {{get result (concat layout.path ".value")}}
-                </a>
-                {{fa-icon "external-link" class="p-link ml-1"}}
-              {{/if}}
-              {{#if layout.userLink}}
-                <a
-                  class="p-link"
-                  href="{{block.userOptions.url}}/nav_to.do?uri=/sys_user.do?sys_id={{get result (concat layout.path ".sysId")}}"
-                >
-                  {{get result (concat layout.path ".value")}}
-                </a>
-                {{fa-icon "external-link" class="p-link ml-1"}}
-              {{/if}}
-            </h1>
-          {{else if (eq layout.type "block")}}
-            <div class="pl-{{layout.depth}}">
-              <span class="p-key">{{get result (concat layout.path ".title")}}:</span>
-              <div class="block p-value">
-                {{get result (concat layout.path ".value")}}
+        {{#let (get result.fields layout.path) as | field |}}
+          {{#if (get field "value")}}
+            {{#if (eq layout.type "title")}}
+              <h1 class="p-title pl-{{layout.depth}}">
+                {{#if layout.icon}}
+                  {{fa-icon layout.icon fixedWidth=true}}
+                {{/if}}
+                {{#if layout.incidentLink}}
+                  <a
+                    class="p-link"
+                    href="{{block.userOptions.url}}/now/sir/record/sn_si_incident/{{get field "sysId"}}"
+                  >
+                    {{get field "value"}}
+                  </a>
+                  {{fa-icon "external-link" class="p-link ml-1"}}
+                {{/if}}
+                {{#if layout.observableLink}}
+                  <a
+                    class="p-link"
+                    href="{{block.userOptions.url}}/now/sir/record/sn_ti_observable/{{get field "sysId"}}"
+                  >
+                    {{get field "value"}}
+                  </a>
+                  {{fa-icon "external-link" class="p-link ml-1"}}
+                {{/if}}
+                {{#if layout.taskLink}}
+                  <a
+                    class="p-link"
+                    href="{{block.userOptions.url}}/nav_to.do?uri=/sn_si_task.do?sys_id={{get field "sysId"}}"
+                  >
+                    {{get field "value"}}
+                  </a>
+                  {{fa-icon "external-link" class="p-link ml-1"}}
+                {{/if}}
+                {{#if layout.userLink}}
+                  <a
+                    class="p-link"
+                    href="{{block.userOptions.url}}/nav_to.do?uri=/sys_user.do?sys_id={{get field "sysId"}}"
+                  >
+                    {{get field "value"}}
+                  </a>
+                  {{fa-icon "external-link" class="p-link ml-1"}}
+                {{/if}}
+                {{#if (and layout.onDetails block.isLoadingDetails)}}
+                  <span class="p-footnote ml-1">
+                    {{fa-icon icon="spinner-third" fixedWidth=true spin=true}} Loading ...
+                  </span>
+                {{/if}}
+              </h1>
+            {{else if (eq layout.type "block")}}
+              <div class="pl-{{layout.depth}}">
+                <span class="p-key">{{get field "title"}}:</span>
+                <div class="block p-value">
+                  {{get field "value"}}
+                </div>
               </div>
-            </div>
-          {{else if (eq layout.type "list")}}
-            <div class="pl-{{layout.depth}}">
-              <span class="p-key">{{get result (concat layout.path ".title")}}:</span>
-              <div class="block p-value">
-                {{#each (get result (concat layout.path ".value")) as |item index|}}
-                  <div class="new-line">
-                    {{item}}
-                  </div>
-                {{/each}}
+            {{else if (eq layout.type "pre")}}
+              <div class="pl-{{layout.depth}}">
+                <div class="p-key">{{get field "title"}}:</div>
+                <pre>{{get field "value"}}</pre>
               </div>
-            </div>
-          {{else if (eq layout.type "none")}}
-          {{else}}
-            <div class="pl-{{layout.depth}}">
-              <span class="p-key">{{get result (concat layout.path ".title")}}:</span>
-              {{#if (get result (concat layout.path ".color"))}}
-                <span class="p-value" style="color: {{get result (concat layout.path ".color")}}">
-                  {{get result (concat layout.path ".value")}}
-                </span>
-              {{else}}
-                <span class="p-value">
-                  {{get result (concat layout.path ".value")}}
-                </span>
-              {{/if}}
-            </div>
-          {{/if}}
-        {{/if}}
+            {{else if (eq layout.type "list")}}
+              <div class="pl-{{layout.depth}}">
+                <span class="p-key">{{get field "title"}}:</span>
+                <div class="block p-value">
+                  {{#each (get field "value") as |item index|}}
+                    <div class="new-line">
+                      {{item}}
+                    </div>
+                  {{/each}}
+                </div>
+              </div>
+            {{else if (eq layout.type "none")}}
+            {{else}}
+              <div class="pl-{{layout.depth}}">
+                <span class="p-key">{{get field "title"}}:</span>
+                {{#if (get field "color")}}
+                  <span class="p-value" style="color: {{get field "color"}}">
+                    {{get field "value"}}
+                  </span>
+                {{else}}
+                  <span class="p-value">
+                    {{get field "value"}}
+                  </span>
+                {{/if}}
+              </div>
+            {{/if}}
+          {{/if}}  
+        {{/let}}          
       {{/each}}
-    {{/each}}
-  {{/if}}
-  {{#if (eq activeTab "edit")}}
-    {{#if ticketClosed}}
-      <span class="p-key note"><em><b>NOTE:</b></em> This ticket is Closed and cannot be Edited</span>
     {{/if}}
-    <div class="select-container first">
-      <span class="p-value">Description: &nbsp;</span>
-      {{textarea
-        class="input-field"
-        rows=3
-        value=description
-        disabled=ticketClosed
-      }}
-    </div>
-    <div class="select-container">
-      <span class="p-value">Work Notes: &nbsp;</span>
-      {{textarea
-        class="input-field"
-        rows=2
-        value=workNotes
-        disabled=ticketClosed
-      }}
-    </div>
-    <div class="select-container">
-      <span class="p-value">State: &nbsp;</span>
-      <select 
-        class="dropdown" 
-        onchange={{action (mut state) value="target.value"}}
-        disabled={{ticketClosed}}
-      >
-        {{#each possibleStates as |possibleState|}}
-          <option class="dropdown-option" selected={{eq state possibleState}} value={{possibleState}}>
-            {{possibleState}}
-          </option>
-        {{/each}}
-      </select>
-    </div>
-    <div class="select-container">
-      <span class="p-value">Business Impact: &nbsp;</span>
-      <select 
-        class="dropdown" 
-        onchange={{action (mut businessImpact) value="target.value"}}
-        disabled={{ticketClosed}}
-      >
-        {{#each possibleBusinessImpacts as |possibleBusinessImpact|}}
-          <option class="dropdown-option" selected={{eq businessImpact possibleBusinessImpact}} value={{possibleBusinessImpact}}>
-            {{possibleBusinessImpact}}
-          </option>
-        {{/each}}
-      </select>
-    </div>
-    <div class="select-container">
-      <span class="p-value">Category: &nbsp;</span>
-      <select 
-        class="dropdown" 
-        onchange={{action "changeCategory" value="target.value"}}
-        disabled={{ticketClosed}}
-      >
-        <option class="dropdown-option" selected={{eq category "-- None --"}} value={{argumentOption}}>
-          -- None --
-        </option>
-        {{#each possibleCategories as |possibleCategory|}}
-          <option class="dropdown-option" selected={{eq category possibleCategory}} value={{possibleCategory}}>
-            {{possibleCategory}}
-          </option>
-        {{/each}}
-      </select>
-    </div>
-    <div class="select-container">
-      <span class="p-value">Subcategory: &nbsp;</span>
-      <select 
-        class="dropdown" 
-        onchange={{action (mut subcategory) value="target.value"}}
-        disabled={{ticketClosed}}
-      >
-        <option class="dropdown-option" selected={{eq subcategory "-- None --"}} value={{argumentOption}}>
-          -- None --
-        </option>
-        {{#each possibleSubcategories as |possibleSubcategory|}}
-          <option class="dropdown-option" selected={{eq subcategory possibleSubcategory}} value={{possibleSubcategory}}>
-            {{possibleSubcategory}}
-          </option>
-        {{/each}}
-      </select>
-    </div>
-
-    <div class="d-flex flex-row-reverse justify-content-between align-items-center mt-2">
-      <button 
-        {{action "updateTicket"}}
-        disabled={{ticketClosed}}
-        class="p-btn btn btn-secondary m-0 update-button"
-      >
-        {{#if updateIsRunning}}
-          {{fa-icon "spinner-third" fixedWidth=true spin=true}}
-        {{else}}
-          Update
+    {{!-- End of Incident Details Tab --}}
+    
+    {{!-- Incident Observables Tab --}}
+    {{#if (eq result.__activeTab "observables")}}
+      <div class="mt-1">
+        {{#if result.__loadingObservables}}
+          <div>
+            {{fa-icon icon="spinner-third" fixedWidth=true spin=true}} Loading Observables ...
+          </div>
         {{/if}}
-      </button>
+        {{#if (eq result.__observables.length 0)}}
+          <div>
+            No associated observables
+          </div>
+        {{/if}}
+        {{#each result.__observables as | observable | }}
+          {{#each details.observableLayout as | layout index| }}
+            {{#let (get observable.fields layout.path) as | field |}}
+              {{#if (get field "value")}}
+                {{#if (eq layout.type "title")}}
+                <h1 class="p-title pl-{{layout.depth}}">
+                  {{#if layout.icon}}
+                    {{fa-icon layout.icon fixedWidth=true}}
+                  {{/if}}
+                  {{#if layout.incidentLink}}
+                    <a
+                      class="p-link"
+                      href="{{block.userOptions.url}}/now/sir/record/sn_si_incident/{{get field "sysId"}}"
+                    >
+                      {{get field "value"}}
+                    </a>
+                    {{fa-icon "external-link" class="p-link ml-1"}}
+                  {{/if}}
+                  {{#if layout.observableLink}}
+                    <a
+                      class="p-link"
+                      href="{{block.userOptions.url}}/now/sir/record/sn_ti_observable/{{get field "sysId"}}"
+                    >
+                    {{get field "value"}}
+                    </a>
+                    {{fa-icon "external-link" class="p-link ml-1"}}
+                  {{/if}}
+                  {{#if layout.taskLink}}
+                    <a
+                      class="p-link"
+                      href="{{block.userOptions.url}}/nav_to.do?uri=/sn_si_task.do?sys_id={{get field "sysId"}}"
+                    >
+                    {{get field "value"}}
+                    </a>
+                    {{fa-icon "external-link" class="p-link ml-1"}}
+                  {{/if}}
+                  {{#if layout.userLink}}
+                    <a
+                      class="p-link"
+                      href="{{block.userOptions.url}}/nav_to.do?uri=/sys_user.do?sys_id={{get field "sysId"}}"
+                    >
+                    {{get field "value"}}
+                    </a>
+                    {{fa-icon "external-link" class="p-link ml-1"}}
+                  {{/if}}
+                </h1>
+              {{else if (eq layout.type "block")}}
+                <div class="pl-{{layout.depth}}">
+                  <span class="p-key">{{get field "title"}}:</span>
+                  <div class="block p-value">
+                    {{get field "value"}}
+                  </div>
+                </div>
+              {{else if (eq layout.type "list")}}
+                <div class="pl-{{layout.depth}}">
+                  <span class="p-key">{{get field "title"}}:</span>
+                  <div class="block p-value">
+                    {{#each (get field "value") as |item index|}}
+                      <div class="new-line">
+                        {{item}}
+                      </div>
+                    {{/each}}
+                  </div>
+                </div>
+              {{else if (eq layout.type "none")}}
+              {{else}}
+                <div class="pl-{{layout.depth}}">
+                  <span class="p-key">{{get field "title"}}:</span>
+                  {{#if (get field "color")}}
+                    <span class="p-value" style="color: {{get result (concat layout.path ".color")}}">
+                      {{get field "value"}}
+                    </span>
+                  {{else}}
+                    <span class="p-value">
+                      {{get field "value"}}
+                    </span>
+                  {{/if}}
+                </div>
+              {{/if}}
+              {{/if}}
+            {{/let}}
+          {{/each}}  
+        {{/each}}
+      </div>
+    {{/if}}
+    {{!-- End of Incident Observables Tab --}}
 
-      {{#if updateMessage}}
-        <div class="update-message alert alert-info m-0">
-          {{updateMessage}}
-        </div>
+    {{!-- Edit Incident Tab --}}
+    {{!--
+    {{#if (eq result.__activeTab "edit")}}
+      {{#if ticketClosed}}
+        <span class="p-key note"><em><b>NOTE:</b></em> This ticket is Closed and cannot be Edited</span>
       {{/if}}
+      <div class="select-container first">
+        <span class="p-value">Description: &nbsp;</span>
+        {{textarea
+                class="input-field"
+                rows=3
+                value=description
+                disabled=ticketClosed
+        }}
+      </div>
+      <div class="select-container">
+        <span class="p-value">Work Notes: &nbsp;</span>
+        {{textarea
+                class="input-field"
+                rows=2
+                value=workNotes
+                disabled=ticketClosed
+        }}
+      </div>
+      <div class="select-container">
+        <span class="p-value">State: &nbsp;</span>
+        <select
+                class="dropdown"
+                onchange={{action (mut state) value="target.value"}}
+                disabled={{ticketClosed}}
+        >
+          {{#each possibleStates as |possibleState|}}
+            <option class="dropdown-option" selected={{eq state possibleState}} value={{possibleState}}>
+              {{possibleState}}
+            </option>
+          {{/each}}
+        </select>
+      </div>
+      <div class="select-container">
+        <span class="p-value">Business Impact: &nbsp;</span>
+        <select
+                class="dropdown"
+                onchange={{action (mut businessImpact) value="target.value"}}
+                disabled={{ticketClosed}}
+        >
+          {{#each possibleBusinessImpacts as |possibleBusinessImpact|}}
+            <option class="dropdown-option" selected={{eq businessImpact possibleBusinessImpact}} value={{possibleBusinessImpact}}>
+              {{possibleBusinessImpact}}
+            </option>
+          {{/each}}
+        </select>
+      </div>
+      <div class="select-container">
+        <span class="p-value">Category: &nbsp;</span>
+        <select
+                class="dropdown"
+                onchange={{action "changeCategory" value="target.value"}}
+                disabled={{ticketClosed}}
+        >
+          <option class="dropdown-option" selected={{eq category "-- None --"}} value={{argumentOption}}>
+            -- None --
+          </option>
+          {{#each possibleCategories as |possibleCategory|}}
+            <option class="dropdown-option" selected={{eq category possibleCategory}} value={{possibleCategory}}>
+              {{possibleCategory}}
+            </option>
+          {{/each}}
+        </select>
+      </div>
+      <div class="select-container">
+        <span class="p-value">Subcategory: &nbsp;</span>
+        <select
+                class="dropdown"
+                onchange={{action (mut subcategory) value="target.value"}}
+                disabled={{ticketClosed}}
+        >
+          <option class="dropdown-option" selected={{eq subcategory "-- None --"}} value={{argumentOption}}>
+            -- None --
+          </option>
+          {{#each possibleSubcategories as |possibleSubcategory|}}
+            <option class="dropdown-option" selected={{eq subcategory possibleSubcategory}} value={{possibleSubcategory}}>
+              {{possibleSubcategory}}
+            </option>
+          {{/each}}
+        </select>
+      </div>
 
-      {{#if updateErrorMessage}}
-        <div class="update-message alert alert-danger m-0">
-          {{updateErrorMessage}}
-        </div>
-      {{/if}}
-    </div>
-  {{/if}}
-{{/if}}
+      <div class="d-flex flex-row-reverse justify-content-between align-items-center mt-2">
+        <button
+          {{action "updateTicket"}}
+                disabled={{ticketClosed}}
+                class="p-btn btn btn-secondary m-0 update-button"
+        >
+          {{#if updateIsRunning}}
+            {{fa-icon "spinner-third" fixedWidth=true spin=true}}
+          {{else}}
+            Update
+          {{/if}}
+        </button>
+
+        {{#if updateMessage}}
+          <div class="update-message alert alert-info m-0">
+            {{updateMessage}}
+          </div>
+        {{/if}}
+
+        {{#if updateErrorMessage}}
+          <div class="update-message alert alert-danger m-0">
+            {{updateErrorMessage}}
+          </div>
+        {{/if}}
+      </div>
+    {{/if}}
+    --}}
+    {{!-- End of Edit Incident Tab --}}
+  </div>
+{{/each}}
+
+

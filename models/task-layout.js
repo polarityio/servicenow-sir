@@ -89,11 +89,53 @@ module.exports = [
     depth: 0
   },
   {
+    path: 'parent.details.number',
+    depth: 1,
+    type: 'title',
+    icon: 'ticket',
+    incidentLink: true,
+    onDetails: true
+  },
+  {
+    path: 'parent.details.description',
+    depth: 1,
+    type: 'block'
+  },
+  {
+    path: 'parent.details.short_description',
+    depth: 1
+  },
+  {
+    path: 'parent.details.active',
+    depth: 1
+  },
+  {
+    path: 'parent.details.business_criticality',
+    depth: 1
+  },
+  {
+    path: 'parent.details.priority',
+    depth: 1
+  },
+  {
+    path: 'parent.details.opened_at',
+    depth: 1
+  },
+  {
+    path: 'parent.details.resolved_at',
+    depth: 1
+  },
+  {
+    path: 'parent.details.closed_at',
+    depth: 1
+  },
+  {
     path: 'opened_by',
     depth: 1,
     type: 'title',
     icon: 'door-open',
-    userLink: true
+    userLink: true,
+    onDetails: true
   },
   {
     path: 'opened_by.details.name',
@@ -116,7 +158,8 @@ module.exports = [
     depth: 1,
     type: 'title',
     icon: 'user',
-    userLink: true
+    userLink: true,
+    onDetails: true
   },
   {
     path: 'assigned_to.details.name',
@@ -144,7 +187,8 @@ module.exports = [
     depth: 1,
     type: 'title',
     icon: 'check',
-    userLink: true
+    userLink: true,
+    onDetails: true
   },
   {
     path: 'resolved_by.details.name',
@@ -171,7 +215,8 @@ module.exports = [
     depth: 1,
     type: 'title',
     icon: 'door-closed',
-    userLink: true
+    userLink: true,
+    onDetails: true
   },
   {
     path: 'closed_by.details.name',

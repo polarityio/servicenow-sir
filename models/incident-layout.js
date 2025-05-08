@@ -23,7 +23,13 @@ module.exports = [
   },
   {
     path: 'short_description',
-    depth: 0
+    depth: 0,
+    type: 'block'
+  },
+  {
+    path: 'comments_and_work_notes',
+    depth: 0,
+    type: 'pre'
   },
   {
     path: 'active',
@@ -106,7 +112,8 @@ module.exports = [
     depth: 1,
     type: 'title',
     icon: 'door-open',
-    userLink: true
+    userLink: true,
+    onDetails: true
   },
   {
     path: 'opened_by.details.name',
@@ -129,7 +136,8 @@ module.exports = [
     depth: 1,
     type: 'title',
     icon: 'user',
-    userLink: true
+    userLink: true,
+    onDetails: true
   },
   {
     path: 'assigned_to.details.name',
@@ -157,7 +165,8 @@ module.exports = [
     depth: 1,
     type: 'title',
     icon: 'check',
-    userLink: true
+    userLink: true,
+    onDetails: true
   },
   {
     path: 'resolved_by.details.name',
@@ -184,7 +193,8 @@ module.exports = [
     depth: 1,
     type: 'title',
     icon: 'door-closed',
-    userLink: true
+    userLink: true,
+    onDetails: true
   },
   {
     path: 'closed_by.details.name',

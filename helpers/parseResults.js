@@ -1,7 +1,10 @@
 const async = require('async');
 const incidentModel = require('../models/incident-model');
+const observableModel = require('../models/observable-model');
+const { getLogger } = require('./logger');
 
 const propertyMap = {
+  observable: observableModel,
   task: incidentModel,
   incident: incidentModel,
   sys_user: {
@@ -40,7 +43,7 @@ const propertyMap = {
   }
 };
 
-function parseResults(type, results, withDetails, options, requestWithDefaults, Logger, cb) {
+function parseResults(type, results, withDetails, options, requestWithDefaults, cb) {
   if (typeof withDetails === 'undefined') {
     withDetails = false;
   }
@@ -49,10 +52,22 @@ function parseResults(type, results, withDetails, options, requestWithDefaults, 
   async.each(
     results,
     (result, next) => {
-      parseResult(type, result, withDetails, options, requestWithDefaults, Logger, (err, parsedResult) => {
-        parsedResults.push(parsedResult);
-        next(err);
-      });
+      parseResult(
+        type,
+        // If result.fields is present then these results have been parsed once before
+        // and this call is happening from `onDetails`.
+        result.fields ? result.fields : result,
+        withDetails,
+        options,
+        requestWithDefaults,
+        (err, parsedResult) => {
+          parsedResults.push({
+            hasMatchedObservable: result.observable ? true : false,
+            fields: parsedResult
+          });
+          next(err);
+        }
+      );
     },
     (err) => {
       cb(err, parsedResults);
@@ -60,7 +75,7 @@ function parseResults(type, results, withDetails, options, requestWithDefaults, 
   );
 }
 
-function parseResult(type, result, withDetails, options, requestWithDefaults, Logger, cb) {
+function parseResult(type, result, withDetails, options, requestWithDefaults, cb) {
   let parsedResult = {};
 
   if (typeof propertyMap[type] !== 'undefined') {
@@ -73,7 +88,6 @@ function parseResult(type, result, withDetails, options, requestWithDefaults, Lo
           if (valueIsLink(resultValue) && !linkIsProcessed(resultValue)) {
             // this property is a link so we need to traverse it
             if (withDetails) {
-
               getDetailsInformation(
                 resultValue.link,
                 options,
@@ -89,7 +103,6 @@ function parseResult(type, result, withDetails, options, requestWithDefaults, Lo
                     true,
                     options,
                     requestWithDefaults,
-                    Logger,
                     (parseDetailsError, parsedDetailsResult) => {
                       if (parseDetailsError) {
                         return nextProperty(parseDetailsError);
@@ -145,8 +158,6 @@ function parseResult(type, result, withDetails, options, requestWithDefaults, Lo
   }
 }
 
-
-
 function valueIsProcessed(resultValue) {
   if (resultValue !== null && resultValue.isProcessed === true) {
     return true;
@@ -197,12 +208,17 @@ const transformPropertyValue = (propertyObj, value, parentObj) => ({
 });
 
 function getDetailsInformation(link, options, requestWithDefaults, cb) {
-  const requestOptions = {
+  let requestOptions = {
     uri: link,
-    auth: {
-      username: options.username,
-      password: options.password
-    }
+    ...(options.apiKey
+      ? { headers: { [options.apiKeyHeader]: options.apiKey } }
+      : {
+          auth: {
+            username: options.username,
+            password: options.password
+          }
+        }),
+    json: true
   };
 
   requestWithDefaults(requestOptions, (err, response, body) => {
