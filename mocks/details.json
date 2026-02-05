@@ -1,0 +1,438 @@
+{
+  "serviceNowObjectType": "incident",
+  "layout": {
+    "should_be_filtered": "This layout configuration is for UI only"
+  },
+  "observableLayout": {
+    "should_be_filtered": "Observable layout configuration"
+  },
+  "results": [
+    {
+      "hasMatchedObservable": true,
+      "fields": {
+        "number": {
+          "title": "Number",
+          "value": "SIR0010001",
+          "type": "incident",
+          "isLink": false,
+          "isProcessed": true,
+          "details": null,
+          "sysId": "a9e8b7c6d5e4f3a2b1c0d9e8f7a6b5c4"
+        },
+        "sys_id": {
+          "title": "sys_id",
+          "value": "a9e8b7c6d5e4f3a2b1c0d9e8f7a6b5c4",
+          "type": "incident",
+          "isLink": false,
+          "isProcessed": true,
+          "details": null,
+          "sysId": "a9e8b7c6d5e4f3a2b1c0d9e8f7a6b5c4"
+        },
+        "short_description": {
+          "title": "Short Description",
+          "value": "Malware detected on endpoint - suspicious PowerShell execution",
+          "type": "incident",
+          "isLink": false,
+          "isProcessed": true,
+          "details": null,
+          "sysId": "a9e8b7c6d5e4f3a2b1c0d9e8f7a6b5c4"
+        },
+        "description": {
+          "title": "Description",
+          "value": "Multiple alerts triggered by EDR system indicating potential malware activity. Suspicious PowerShell commands executed with encoded payloads. Network connections to known C2 infrastructure detected. Investigation required.",
+          "type": "incident",
+          "isLink": false,
+          "isProcessed": true,
+          "details": null,
+          "sysId": "a9e8b7c6d5e4f3a2b1c0d9e8f7a6b5c4"
+        },
+        "state": {
+          "title": "State",
+          "value": "Analysis",
+          "type": "incident",
+          "isLink": false,
+          "isProcessed": true,
+          "details": null,
+          "sysId": "a9e8b7c6d5e4f3a2b1c0d9e8f7a6b5c4"
+        },
+        "severity": {
+          "title": "Severity",
+          "value": "1 - High",
+          "type": "incident",
+          "isLink": false,
+          "isProcessed": true,
+          "details": null,
+          "sysId": "a9e8b7c6d5e4f3a2b1c0d9e8f7a6b5c4"
+        },
+        "priority": {
+          "title": "Priority",
+          "value": "2 - High",
+          "type": "incident",
+          "isLink": false,
+          "isProcessed": true,
+          "details": null,
+          "sysId": "a9e8b7c6d5e4f3a2b1c0d9e8f7a6b5c4"
+        },
+        "risk_score": {
+          "title": "Risk",
+          "value": 85,
+          "color": "#FF6248",
+          "type": "incident",
+          "isLink": false,
+          "isProcessed": true,
+          "details": null,
+          "sysId": "a9e8b7c6d5e4f3a2b1c0d9e8f7a6b5c4"
+        },
+        "category": {
+          "title": "Category",
+          "value": "Malware",
+          "type": "incident",
+          "isLink": false,
+          "isProcessed": true,
+          "details": null,
+          "sysId": "a9e8b7c6d5e4f3a2b1c0d9e8f7a6b5c4"
+        },
+        "subcategory": {
+          "title": "Subcategory",
+          "value": "Trojan",
+          "type": "incident",
+          "isLink": false,
+          "isProcessed": true,
+          "details": null,
+          "sysId": "a9e8b7c6d5e4f3a2b1c0d9e8f7a6b5c4"
+        },
+        "business_criticality": {
+          "title": "Business Impact",
+          "value": "1 - Critical",
+          "type": "incident",
+          "isLink": false,
+          "isProcessed": true,
+          "details": null,
+          "sysId": "a9e8b7c6d5e4f3a2b1c0d9e8f7a6b5c4"
+        },
+        "opened_at": {
+          "title": "Opened At",
+          "value": "2024-01-15 08:23:15",
+          "type": "incident",
+          "isLink": false,
+          "isProcessed": true,
+          "details": null,
+          "sysId": "a9e8b7c6d5e4f3a2b1c0d9e8f7a6b5c4"
+        },
+        "resolved_at": {
+          "title": "Resolved At",
+          "value": null,
+          "type": "incident",
+          "isLink": false,
+          "isProcessed": true,
+          "details": null,
+          "sysId": "a9e8b7c6d5e4f3a2b1c0d9e8f7a6b5c4"
+        },
+        "closed_at": {
+          "title": "Closed At",
+          "value": null,
+          "type": "incident",
+          "isLink": false,
+          "isProcessed": true,
+          "details": null,
+          "sysId": "a9e8b7c6d5e4f3a2b1c0d9e8f7a6b5c4"
+        },
+        "assigned_to": {
+          "title": "Assigned To",
+          "value": "Assigned To",
+          "type": "sys_user",
+          "link": "https://instance.service-now.com/api/now/table/sys_user/b8d7c6a5e4f3d2c1b0a9f8e7d6c5b4a3",
+          "isLink": true,
+          "isProcessed": true,
+          "details": {
+            "name": {
+              "title": "Name",
+              "value": "Sarah Johnson",
+              "type": "sys_user",
+              "isLink": false,
+              "isProcessed": true
+            },
+            "email": {
+              "title": "Email",
+              "value": "sarah.johnson@company.com",
+              "type": "sys_user",
+              "isLink": false,
+              "isProcessed": true
+            },
+            "title": {
+              "title": "Title",
+              "value": "Senior Security Analyst",
+              "type": "sys_user",
+              "isLink": false,
+              "isProcessed": true
+            }
+          },
+          "sysId": "b8d7c6a5e4f3d2c1b0a9f8e7d6c5b4a3"
+        },
+        "opened_by": {
+          "title": "Opened By",
+          "value": "Opened By",
+          "type": "sys_user",
+          "link": "https://instance.service-now.com/api/now/table/sys_user/c9e8d7f6a5b4c3d2e1f0a9b8c7d6e5f4",
+          "isLink": true,
+          "isProcessed": true,
+          "details": {
+            "name": {
+              "title": "Name",
+              "value": "Security Automation",
+              "type": "sys_user",
+              "isLink": false,
+              "isProcessed": true
+            },
+            "email": {
+              "title": "Email",
+              "value": "security-automation@company.com",
+              "type": "sys_user",
+              "isLink": false,
+              "isProcessed": true
+            }
+          },
+          "sysId": "c9e8d7f6a5b4c3d2e1f0a9b8c7d6e5f4"
+        },
+        "work_notes": {
+          "title": "Work Notes",
+          "value": [
+            "2024-01-15 08:30:00 - Initial triage completed. Endpoint isolated from network.",
+            "2024-01-15 09:15:00 - Forensic image captured. Malware sample extracted for analysis.",
+            "2024-01-15 10:45:00 - IOCs identified and added to threat intel platform."
+          ],
+          "type": "incident",
+          "isLink": false,
+          "isProcessed": true,
+          "details": null,
+          "sysId": "a9e8b7c6d5e4f3a2b1c0d9e8f7a6b5c4"
+        },
+        "secure_notes": {
+          "title": "Secure Notes",
+          "value": "Affected user credentials have been reset. MFA enforced.",
+          "type": "incident",
+          "isLink": false,
+          "isProcessed": true,
+          "details": null,
+          "sysId": "a9e8b7c6d5e4f3a2b1c0d9e8f7a6b5c4"
+        },
+        "finding": {
+          "title": "Finding",
+          "value": "FND0010025",
+          "type": "incident",
+          "isLink": false,
+          "isProcessed": true,
+          "details": null,
+          "sysId": "a9e8b7c6d5e4f3a2b1c0d9e8f7a6b5c4"
+        },
+        "sys_created_by": {
+          "title": "Created By",
+          "value": "admin",
+          "type": "incident",
+          "isLink": false,
+          "isProcessed": true,
+          "details": null,
+          "sysId": "a9e8b7c6d5e4f3a2b1c0d9e8f7a6b5c4"
+        },
+        "sys_created_on": {
+          "title": "Created On",
+          "value": "2024-01-15 08:23:15",
+          "type": "incident",
+          "isLink": false,
+          "isProcessed": true,
+          "details": null,
+          "sysId": "a9e8b7c6d5e4f3a2b1c0d9e8f7a6b5c4"
+        },
+        "sys_updated_on": {
+          "title": "Updated On",
+          "value": "2024-01-15 10:52:33",
+          "type": "incident",
+          "isLink": false,
+          "isProcessed": true,
+          "details": null,
+          "sysId": "a9e8b7c6d5e4f3a2b1c0d9e8f7a6b5c4"
+        },
+        "active": {
+          "title": "Active",
+          "value": "true",
+          "type": "incident",
+          "isLink": false,
+          "isProcessed": true,
+          "details": null,
+          "sysId": "a9e8b7c6d5e4f3a2b1c0d9e8f7a6b5c4"
+        }
+      }
+    },
+    {
+      "hasMatchedObservable": false,
+      "fields": {
+        "number": {
+          "title": "Number",
+          "value": "SIR0010002",
+          "type": "incident",
+          "isLink": false,
+          "isProcessed": true,
+          "details": null,
+          "sysId": "f4e3d2c1b0a9f8e7d6c5b4a3e2d1c0b9"
+        },
+        "sys_id": {
+          "title": "sys_id",
+          "value": "f4e3d2c1b0a9f8e7d6c5b4a3e2d1c0b9",
+          "type": "incident",
+          "isLink": false,
+          "isProcessed": true,
+          "details": null,
+          "sysId": "f4e3d2c1b0a9f8e7d6c5b4a3e2d1c0b9"
+        },
+        "short_description": {
+          "title": "Short Description",
+          "value": "Phishing email with malicious attachment reported",
+          "type": "incident",
+          "isLink": false,
+          "isProcessed": true,
+          "details": null,
+          "sysId": "f4e3d2c1b0a9f8e7d6c5b4a3e2d1c0b9"
+        },
+        "state": {
+          "title": "State",
+          "value": "Resolved",
+          "type": "incident",
+          "isLink": false,
+          "isProcessed": true,
+          "details": null,
+          "sysId": "f4e3d2c1b0a9f8e7d6c5b4a3e2d1c0b9"
+        },
+        "severity": {
+          "title": "Severity",
+          "value": "3 - Medium",
+          "type": "incident",
+          "isLink": false,
+          "isProcessed": true,
+          "details": null,
+          "sysId": "f4e3d2c1b0a9f8e7d6c5b4a3e2d1c0b9"
+        },
+        "priority": {
+          "title": "Priority",
+          "value": "3 - Moderate",
+          "type": "incident",
+          "isLink": false,
+          "isProcessed": true,
+          "details": null,
+          "sysId": "f4e3d2c1b0a9f8e7d6c5b4a3e2d1c0b9"
+        },
+        "risk_score": {
+          "title": "Risk",
+          "value": 45,
+          "color": "#90EF8F",
+          "type": "incident",
+          "isLink": false,
+          "isProcessed": true,
+          "details": null,
+          "sysId": "f4e3d2c1b0a9f8e7d6c5b4a3e2d1c0b9"
+        },
+        "category": {
+          "title": "Category",
+          "value": "Phishing",
+          "type": "incident",
+          "isLink": false,
+          "isProcessed": true,
+          "details": null,
+          "sysId": "f4e3d2c1b0a9f8e7d6c5b4a3e2d1c0b9"
+        },
+        "business_criticality": {
+          "title": "Business Impact",
+          "value": "3 - Low",
+          "type": "incident",
+          "isLink": false,
+          "isProcessed": true,
+          "details": null,
+          "sysId": "f4e3d2c1b0a9f8e7d6c5b4a3e2d1c0b9"
+        },
+        "opened_at": {
+          "title": "Opened At",
+          "value": "2024-01-14 14:20:05",
+          "type": "incident",
+          "isLink": false,
+          "isProcessed": true,
+          "details": null,
+          "sysId": "f4e3d2c1b0a9f8e7d6c5b4a3e2d1c0b9"
+        },
+        "resolved_at": {
+          "title": "Resolved At",
+          "value": "2024-01-14 16:45:22",
+          "type": "incident",
+          "isLink": false,
+          "isProcessed": true,
+          "details": null,
+          "sysId": "f4e3d2c1b0a9f8e7d6c5b4a3e2d1c0b9"
+        },
+        "resolved_by": {
+          "title": "Resolved By",
+          "value": "Resolved By",
+          "type": "sys_user",
+          "link": "https://instance.service-now.com/api/now/table/sys_user/d5c4b3a2f1e0d9c8b7a6f5e4d3c2b1a0",
+          "isLink": true,
+          "isProcessed": true,
+          "details": {
+            "name": {
+              "title": "Name",
+              "value": "Mike Chen",
+              "type": "sys_user",
+              "isLink": false,
+              "isProcessed": true
+            },
+            "email": {
+              "title": "Email",
+              "value": "mike.chen@company.com",
+              "type": "sys_user",
+              "isLink": false,
+              "isProcessed": true
+            }
+          },
+          "sysId": "d5c4b3a2f1e0d9c8b7a6f5e4d3c2b1a0"
+        },
+        "close_notes": {
+          "title": "Close Notes",
+          "value": "Email quarantined, sender domain blocked, user educated on phishing indicators.",
+          "type": "incident",
+          "isLink": false,
+          "isProcessed": true,
+          "details": null,
+          "sysId": "f4e3d2c1b0a9f8e7d6c5b4a3e2d1c0b9"
+        }
+      }
+    }
+  ],
+  "isIncident": true,
+  "possibleStates": [
+    "Draft",
+    "Analysis",
+    "Contain",
+    "Eradicate",
+    "Recover",
+    "Review",
+    "Closed",
+    "Cancelled"
+  ],
+  "possibleBusinessImpacts": [
+    "1 - Critical",
+    "2 - High",
+    "3 - Low"
+  ],
+  "possibleCategories": [
+    "Malware",
+    "Phishing",
+    "Network Intrusion",
+    "Data Breach",
+    "Insider Threat",
+    "DDoS",
+    "Unauthorized Access"
+  ],
+  "possibleSubcategories": [
+    "Ransomware",
+    "Trojan",
+    "Worm",
+    "Spyware",
+    "Rootkit"
+  ]
+}
